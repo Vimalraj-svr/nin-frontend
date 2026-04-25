@@ -1,0 +1,198 @@
+/* Birthday banner */
+.birthday-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.7500rem;
+  background: linear-gradient(90deg, oklch(0.96 0.05 42), oklch(0.98 0.02 42));
+  border: 0.0625rem solid oklch(0.85 0.1 42);
+  border-radius: 0.6250rem;
+  padding: 0.8750rem 1.2500rem;
+  margin: 0 0 1.5000rem;
+  font-family: var(--serif);
+  font-size: 1.0000rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.bday-icon {
+  color: var(--gold-deep);
+  font-size: 1.1250rem;
+  flex-shrink: 0;
+}
+.bday-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 1.2500rem;
+  color: var(--ink-mute);
+  cursor: pointer;
+  padding: 0 0.2500rem;
+  flex-shrink: 0;
+}
+.bday-close:hover { color: var(--ink); }
+
+.aside-card--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 10.0000rem;
+  border-style: dashed;
+  opacity: 0.7;
+}
+.aside-empty-icon {
+  font-size: 1.7500rem;
+  color: var(--gold-deep);
+  margin-bottom: 0.7500rem;
+  opacity: 0.5;
+}
+.aside-empty-head {
+  font-family: var(--serif);
+  font-size: 1.0000rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.5000rem;
+}
+.aside-empty-sub {
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-ghost);
+  line-height: 1.6;
+}
+
+.entries-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4.0000rem 1.5000rem;
+}
+.entries-empty-mark {
+  font-family: var(--tamil);
+  font-size: 2.2500rem;
+  color: var(--ink-ghost);
+  margin-bottom: 1.2500rem;
+}
+.entries-empty-head {
+  font-family: var(--serif);
+  font-size: 1.5000rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+  margin-bottom: 0.5000rem;
+}
+.entries-empty-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9375rem;
+  color: var(--ink-mute);
+  max-width: 21.2500rem;
+  line-height: 1.6;
+}
+
+/* ─── Date-filter empty state ─── */
+.date-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3.5000rem 1.5000rem 3.0000rem;
+  border-top: 0.0625rem solid var(--rule);
+}
+.date-empty-glyph {
+  font-family: var(--serif);
+  font-size: 2.5000rem;
+  color: var(--ink-ghost);
+  margin-bottom: 1.1250rem;
+  line-height: 1;
+}
+.date-empty-head {
+  font-family: var(--serif);
+  font-size: 1.3750rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+  margin-bottom: 0.5000rem;
+}
+.date-empty-sub {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9375rem;
+  color: var(--ink-mute);
+  max-width: 20.0000rem;
+  line-height: 1.6;
+}
+
+/* ─── On this day ─── */
+.otd-rail {
+  display: flex;
+  gap: 1.0000rem;
+  overflow-x: auto;
+  padding-bottom: 0.5000rem;
+  scrollbar-width: none;
+}
+.otd-rail::-webkit-scrollbar { display: none; }
+
+.otd-card {
+  flex-shrink: 0;
+  width: 16.2500rem;
+  background: var(--paper);
+  border: 0.0625rem solid var(--rule);
+  border-radius: 0.7500rem;
+  padding: 1.3750rem 1.5000rem;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6250rem;
+  position: relative;
+  overflow: hidden;
+}
+.otd-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, oklch(0.92 0.04 42 / 0.5) 0%, transparent 60%);
+  pointer-events: none;
+}
+.otd-card:hover {
+  transform: translateY(-0.1875rem);
+  box-shadow: 0 0.7500rem 2.0000rem -0.7500rem rgba(26,21,18,0.15);
+}
+.otd-year {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.otd-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.0000rem;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--ink);
+}
+.otd-preview {
+  font-family: var(--serif);
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--ink-mute);
+  line-height: 1.55;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.otd-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5000rem;
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}

@@ -1,0 +1,179 @@
+@if (showOnboarding) {
+  <app-onboarding [userName]="auth.currentUser?.name ?? ''" (done)="showOnboarding = false" />
+}
+
+@if (birthdayWish()) {
+  <div class="birthday-banner fade-in">
+    <span class="bday-icon">✦</span>
+    <span>{{ birthdayWish() }}</span>
+    <button class="bday-close" (click)="birthdayWish.set(null)">×</button>
+  </div>
+}
+
+<div class="home fade-in">
+
+  <!-- Hero -->
+  <section class="home-hero stagger">
+    <div class="greeting">
+      <div class="salute">{{ greeting }}</div>
+      <h1>A quiet space.<br><em>{{ heroQuestion }}</em></h1>
+      @if (showLocalGreeting) {
+        <div class="tam">{{ localGreeting }}</div>
+      }
+      <div class="sub">
+        Speak or write in any language — Tamil, English, Hindi, or a gentle mix.
+        Ninaivugal will shape it into something you'll want to return to.
+      </div>
+      <div class="cta-row">
+        @if (hasTodayEntry) {
+          <button class="btn ghost" (click)="compose()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Add another memory
+          </button>
+          <span class="meta">Today's entry is written ✓</span>
+        } @else {
+          <button class="btn gold" (click)="compose()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            Begin today's entry
+          </button>
+          <span class="meta">or press <span class="kbd">W</span></span>
+        }
+      </div>
+    </div>
+
+    <div class="hero-aside">
+      @if (featured) {
+        <div class="aside-card">
+          <div class="meta">{{ formatDay(featured.created_at) }} · {{ formatTime(featured.created_at) }}</div>
+          <h3 class="title">{{ entryTitle(featured) }}</h3>
+          <div class="txt">{{ entryPreview(featured) }}</div>
+          <div class="foot">
+            <div style="display:flex;align-items:center;gap:10px">
+              <!-- <app-orb [hue]="moodOf(featured).hue" [warmth]="moodOf(featured).warmth" size="sm" [breathing]="true" /> -->
+              <span class="meta">{{ moodOf(featured).label }}</span>
+            </div>
+            <button class="btn ghost" style="padding:8px 14px;font-size:12px" (click)="openEntry(featured.id)">
+              Re-read
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      } @else if (!loading()) {
+        <div class="aside-card aside-card--empty">
+          <div class="aside-empty-icon">✦</div>
+          <div class="aside-empty-head">{{ firstName ? firstName + "'s first memory" : 'Your first memory' }}</div>
+          <div class="aside-empty-sub">Once you write your first entry{{ firstName ? ', ' + firstName : '' }}, it will live here — waiting to be revisited.</div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Section heading -->
+  <div class="section-head">
+    <h2>Recent pages</h2>
+    @if (hasEntries) {
+      <div class="meta">{{ totalCount }}{{ totalCount === 50 ? '+' : '' }} entries written</div>
+    } @else {
+      <div class="meta">{{ firstName ? firstName + "'s diary is empty — begin today" : 'Your diary is empty — begin today' }}</div>
+    }
+  </div>
+
+  <!-- Calendar rail -->
+  <div class="cal-rail">
+    @for (day of calDays; track day.d) {
+      <button
+        class="cal-day"
+        [class.today]="day.today"
+        [class.cal-day--selected]="selectedDate() === day.isoDate"
+        [class.cal-day--has-entry]="!!day.hue"
+        (click)="selectDay(day)"
+        [title]="day.label"
+      >
+        <span class="dow">{{ day.dow }}</span>
+        <span class="d">{{ day.d }}</span>
+        @if (day.hue) {
+          <app-orb [hue]="day.hue" [warmth]="day.warmth ?? 0.7" size="xs" />
+        } @else {
+          <span class="dot-empty"></span>
+        }
+      </button>
+    }
+  </div>
+  @if (selectedDate()) {
+    <div class="date-filter-bar">
+      <span>Showing entries for {{ selectedDate() | date:'d MMM yyyy' }}</span>
+      <button class="date-filter-clear" (click)="clearDateFilter()">Clear ×</button>
+    </div>
+  }
+
+  <!-- Entries grid -->
+  @if (displayEntries.length > 0) {
+    <div class="entries-grid">
+      @for (entry of displayEntries; track entry.id) {
+        <article class="entry-card" (click)="openEntry(entry.id)">
+          <div class="entry-head">
+            <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="sm" />
+            <div class="date-stack">
+              <span class="day">{{ formatDay(entry.created_at) }}</span>
+              <span class="time">{{ formatTime(entry.created_at) }}</span>
+            </div>
+          </div>
+          <h3 class="entry-title">{{ entryTitle(entry) }}</h3>
+          <div class="entry-preview">{{ entryPreview(entry) }}</div>
+          <div class="entry-foot">
+            <span>{{ moodOf(entry).label }}</span>
+            <span class="sep"></span>
+            <span>{{ entryLang(entry) }}</span>
+            <span class="sep"></span>
+            <span>{{ entryWordCount(entry) }} words</span>
+          </div>
+        </article>
+      }
+    </div>
+  } @else if (!loading()) {
+    @if (selectedDate() && hasEntries) {
+      <!-- A date is selected but has no entries -->
+      <div class="date-empty">
+        <div class="date-empty-glyph">◷</div>
+        <div class="date-empty-head">Nothing written this day{{ firstName ? ', ' + firstName : '' }}.</div>
+        <div class="date-empty-sub">The page was left blank — perhaps rest was the entry.</div>
+        <button class="btn gold" style="margin-top: 20px" (click)="compose()">Write for today</button>
+      </div>
+    } @else if (!hasEntries) {
+      <div class="entries-empty">
+        <div class="entries-empty-mark">{{ brandMark() }}</div>
+        <div class="entries-empty-head">No memories yet{{ firstName ? ', ' + firstName : '' }}.</div>
+        <div class="entries-empty-sub">Speak for thirty seconds about your day. That is all it takes.</div>
+        <button class="btn gold" style="margin-top:24px" (click)="compose()">Write your first entry</button>
+      </div>
+    }
+  }
+
+  <!-- On this day -->
+  @if (onThisDay().length > 0) {
+    <div class="section-head" style="margin-top: 48px">
+      <h2>On this day</h2>
+      <div class="meta">what you wrote on this date in past years</div>
+    </div>
+    <div class="otd-rail">
+      @for (entry of onThisDay(); track entry.id) {
+        <article class="otd-card" (click)="openEntry(entry.id)">
+          <div class="otd-year">{{ formatYear(entry.created_at) }}</div>
+          <h3 class="otd-title">{{ entryTitle(entry) }}</h3>
+          <p class="otd-preview">{{ entryPreview(entry) }}</p>
+          <div class="otd-foot">
+            <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="xs" />
+            <span>{{ moodOf(entry).label }}</span>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+</div>

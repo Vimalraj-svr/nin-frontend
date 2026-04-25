@@ -1,0 +1,31 @@
+<div class="generating fade-in">
+
+  <div class="orb-stage">
+    <div class="gen-ring gen-ring--1"></div>
+    <div class="gen-ring gen-ring--2"></div>
+    <div class="gen-ring gen-ring--3"></div>
+    <app-orb [hue]="orbHue" [warmth]="0.72" size="xl" [breathing]="true" />
+  </div>
+
+  <div class="gen-body">
+    <div class="gen-status">{{ cur.status }}</div>
+    <div class="gen-quote serif">"{{ cur.quote }}"</div>
+
+    @if (transcriptSnippet()) {
+      <div class="gen-transcript">
+        <span class="gen-transcript-label">your words</span>
+        <span class="gen-transcript-text">{{ transcriptSnippet() }}</span>
+      </div>
+    }
+
+    <div class="gen-steps">
+      @for (s of steps; track $index) {
+        <div class="gen-step" [class]="stepState($index)">
+          <div class="gen-step-dot"></div>
+          <div class="gen-step-label">{{ s.status }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+</div>

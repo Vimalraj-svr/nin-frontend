@@ -1,0 +1,47 @@
+<div class="ob-backdrop">
+  <div class="ob-card fade">
+    <div class="ob-head">
+      <div class="ob-eyebrow">a quick hello</div>
+      <h2>Tell me a little about you, <em>{{ userName }}</em>.</h2>
+      <p class="ob-lede">All of this is completely optional. The more you share, the better I can understand the texture of your days — what brings you joy, what weighs on you. You can always edit this later in Settings.</p>
+    </div>
+
+    <div class="ob-fields">
+      <div class="ob-field">
+        <label>What are some of your favourite things?</label>
+        <textarea [(ngModel)]="details.favourites" name="favourites" placeholder="food, films, places — whatever comes to mind" rows="2"></textarea>
+      </div>
+      <div class="ob-field">
+        <label>Hobbies or things you love doing</label>
+        <textarea [(ngModel)]="details.hobbies" name="hobbies" placeholder="reading, cooking, running at dusk…" rows="2"></textarea>
+      </div>
+      <div class="ob-field">
+        <label>People close to your heart</label>
+        <textarea [(ngModel)]="details.close_friends" name="close_friends" placeholder="names or just 'my sister', 'my best friend'…" rows="2"></textarea>
+      </div>
+      <div class="ob-field">
+        <label>Music that moves you</label>
+        <textarea [(ngModel)]="details.music" name="music" placeholder="composers, singers, genres, songs…" rows="1"></textarea>
+      </div>
+      <div class="ob-field">
+        <label>Sports or games you follow or play</label>
+        <textarea [(ngModel)]="details.sports" name="sports" placeholder="cricket, chess, football…" rows="1"></textarea>
+      </div>
+      <div class="ob-field">
+        <label>Places you love or dream of</label>
+        <textarea [(ngModel)]="details.destinations" name="destinations" placeholder="hometown, a city you adore, somewhere you hope to go…" rows="1"></textarea>
+      </div>
+      <div class="ob-field">
+        <label>Anything else you want me to know</label>
+        <textarea [(ngModel)]="details.extra" name="extra" placeholder="anything at all — I'm listening" rows="2"></textarea>
+      </div>
+    </div>
+
+    <div class="ob-actions">
+      <button class="ob-skip" type="button" (click)="skip()">Skip for now</button>
+      <button class="ob-save" type="button" (click)="save()" [disabled]="saving()">
+        @if (saving()) { Saving… } @else { Save &amp; begin }
+      </button>
+    </div>
+  </div>
+</div>

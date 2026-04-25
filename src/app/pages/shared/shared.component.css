@@ -1,0 +1,91 @@
+.shared-wrap {
+  min-height: 100vh;
+  background: var(--paper-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3.0000rem 1.5000rem 5.0000rem;
+}
+
+.brand {
+  margin-bottom: 3.0000rem;
+}
+.brand-logo {
+  height: 3.5rem;
+  width: auto;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+.loading, .error-state {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-mute);
+  font-size: 1.1250rem;
+  text-align: center;
+  padding: 3.7500rem 0;
+}
+.error-icon { font-size: 2.0000rem; color: var(--gold-deep); margin-bottom: 1.0000rem; opacity: 0.4; }
+.error-state h2 { font-family: var(--serif); font-weight: 400; font-size: 1.3750rem; margin: 0 0 0.7500rem; }
+.error-state p { font-size: 0.9375rem; color: var(--ink-ghost); }
+
+.shared-entry {
+  max-width: 40.0000rem;
+  width: 100%;
+}
+.entry-date {
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  margin-bottom: 1.0000rem;
+}
+.entry-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.7500rem, 4vw, 2.6250rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.7500rem;
+  color: var(--ink);
+}
+.entry-mood {
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 2.0000rem;
+  padding-bottom: 1.5000rem;
+  border-bottom: 0.0625rem solid var(--rule);
+}
+.entry-body p {
+  font-family: var(--serif);
+  font-size: 1.1250rem;
+  line-height: 1.8;
+  color: var(--ink-soft);
+  margin: 0 0 1.5000rem;
+}
+
+.shared-foot {
+  margin-top: 3.0000rem;
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  text-align: center;
+}
+
+.fade-in { animation: sharedFade 0.5s ease both; }
+@keyframes sharedFade {
+  from { opacity: 0; transform: translateY(0.6250rem); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 37.5000rem) {
+  .shared-wrap { padding: 2.0000rem 1.0000rem 3.7500rem; }
+  .entry-title { font-size: clamp(1.3750rem, 6vw, 2.2500rem); }
+  .entry-body p { font-size: 1.0000rem; }
+}

@@ -1,0 +1,18 @@
+<div class="mode-toggle">
+  <label class="mode-toggle__label">Output Mode</label>
+  <div class="mode-toggle__segments" role="group">
+    @for (opt of options; track opt.value) {
+      <button
+        class="mode-segment"
+        [class.mode-segment--active]="selected === opt.value"
+        (click)="select(opt.value)"
+        [id]="'mode-' + opt.value"
+        [title]="opt.description"
+        type="button">
+        <span class="mode-segment__icon">{{ opt.icon }}</span>
+        <span class="mode-segment__label">{{ opt.label }}</span>
+        <span class="mode-segment__desc">{{ opt.description }}</span>
+      </button>
+    }
+  </div>
+</div>

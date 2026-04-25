@@ -1,0 +1,54 @@
+<div class="library fade-in">
+  <div class="meta" style="margin-bottom:16px">
+    @if (loading()) { Loading… }
+    @else { {{ entries().length }} {{ entries().length === 1 ? 'entry' : 'entries' }} }
+  </div>
+  <h1>Your <em>memories</em></h1>
+  @if (showLocalHeading()) {
+    <div class="tam-h">{{ localHeading() }}</div>
+  }
+
+  <div class="filter-row">
+    @for (f of dynamicFilters(); track f.id) {
+      <button
+        class="lang-chip"
+        [style.background]="activeFilter === f.id ? 'var(--ink)' : 'var(--paper-soft)'"
+        [style.color]="activeFilter === f.id ? 'var(--paper)' : 'var(--ink-soft)'"
+        [style.border-color]="activeFilter === f.id ? 'var(--ink)' : 'var(--rule)'"
+        style="cursor:pointer;padding:8px 14px;font-size:11px"
+        (click)="activeFilter = f.id"
+      >{{ filterLabel(f.label) }}</button>
+    }
+  </div>
+
+  @if (!loading() && entries().length === 0) {
+    <div style="text-align:center;padding:80px 24px">
+      <div style="font-family:var(--tamil);font-size:32px;color:var(--ink-ghost);margin-bottom:16px">{{ brandMark() }}</div>
+      <div style="font-family:var(--serif);font-size:18px;color:var(--ink-soft);margin-bottom:8px">No memories yet.</div>
+      <div style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-mute)">Your entries will appear here once you write your first one.</div>
+    </div>
+  }
+
+  <div class="entries-grid" style="margin-top:24px">
+    @for (entry of filtered; track entry.id) {
+      <article class="entry-card" (click)="openEntry(entry.id)">
+        <div class="entry-head">
+          <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="sm" />
+          <div class="date-stack">
+            <span class="day">{{ formatDay(entry.created_at) }}</span>
+            <span class="time">{{ formatTime(entry.created_at) }}</span>
+          </div>
+        </div>
+        <h3 class="entry-title">{{ entryTitle(entry) }}</h3>
+        <div class="entry-preview">{{ entryPreview(entry) }}</div>
+        <div class="entry-foot">
+          <span>{{ moodOf(entry).label }}</span>
+          <span class="sep"></span>
+          <span>{{ entryLang(entry) }}</span>
+          <span class="sep"></span>
+          <span>{{ entryMode(entry) }}</span>
+        </div>
+      </article>
+    }
+  </div>
+</div>

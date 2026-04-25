@@ -1,0 +1,129 @@
+.ob-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 21, 18, 0.55);
+  backdrop-filter: blur(0.2500rem);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5000rem;
+}
+
+.ob-card {
+  background: var(--paper);
+  border: 0.0625rem solid var(--rule);
+  border-radius: 1.0000rem;
+  padding: 3.0000rem 3.2500rem;
+  max-width: 37.5000rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ob-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.8750rem;
+}
+
+.ob-head h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2.0000rem;
+  line-height: 1.2;
+  margin: 0 0 1.0000rem;
+  letter-spacing: -0.015em;
+}
+.ob-head h2 em { font-style: italic; color: var(--gold-deep); }
+
+.ob-lede {
+  font-family: var(--serif);
+  font-size: 1.0000rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin: 0 0 2.0000rem;
+}
+
+.ob-fields { display: flex; flex-direction: column; gap: 1.2500rem; }
+
+.ob-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.5000rem;
+}
+
+.ob-field textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 0.0625rem solid var(--rule);
+  background: transparent;
+  outline: none;
+  font-family: var(--serif);
+  font-size: 1.0000rem;
+  color: var(--ink);
+  line-height: 1.5;
+  resize: none;
+  padding: 0.3750rem 0;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.ob-field textarea:focus { border-bottom-color: var(--ink); }
+.ob-field textarea::placeholder { color: var(--ink-ghost); font-style: italic; }
+
+.ob-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2.2500rem;
+  padding-top: 1.5000rem;
+  border-top: 0.0625rem solid var(--rule);
+}
+
+.ob-skip {
+  background: none;
+  border: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  cursor: pointer;
+  padding: 0;
+}
+.ob-skip:hover { color: var(--ink); }
+
+.ob-save {
+  padding: 0.8750rem 1.7500rem;
+  border: 0.0625rem solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 62.4375rem;
+  font-family: var(--sans);
+  font-size: 0.8750rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ob-save:hover:not(:disabled) {
+  background: var(--ink-soft);
+  transform: translateY(-0.0625rem);
+}
+.ob-save:disabled { background: var(--ink-ghost); border-color: var(--ink-ghost); cursor: not-allowed; }
+
+.fade { animation: obFade 0.35s ease both; }
+@keyframes obFade {
+  from { opacity: 0; transform: translateY(0.7500rem); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 37.5000rem) {
+  .ob-card { padding: 2.0000rem 1.5000rem; }
+}

@@ -1,0 +1,31 @@
+<div class="shared-wrap">
+  <div class="brand">
+    <img src="/assets/logos/monoline_logo.png" class="brand-logo" alt="Ninaivugal" />
+  </div>
+
+  @if (loading) {
+    <div class="loading">Opening this memory…</div>
+  } @else if (error) {
+    <div class="error-state">
+      <div class="error-icon">✦</div>
+      <h2>{{ error }}</h2>
+      <p>Shared entries expire after 48 hours to keep your diary private.</p>
+    </div>
+  } @else if (entry) {
+    <article class="shared-entry fade-in">
+      <div class="entry-date">{{ dateLabel }}</div>
+      <h1 class="entry-title">{{ title }}</h1>
+      @if (entry!.mood_summary) {
+        <div class="entry-mood">{{ entry!.mood_summary }}</div>
+      }
+      <div class="entry-body">
+        @for (p of body; track $index) {
+          <p>{{ p }}</p>
+        }
+      </div>
+    </article>
+    <div class="shared-foot">
+      Shared from a private Ninaivugal diary · expires in 48 hours
+    </div>
+  }
+</div>

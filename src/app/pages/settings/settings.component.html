@@ -1,0 +1,176 @@
+<div class="settings-wrap fade-in">
+  <h1>Settings</h1>
+  <div class="lead">Shape how Ninaivugal listens and responds to you.</div>
+
+  <!-- Language preference -->
+  <div class="setting-section">
+    <div class="setting-section-head">
+      <h2>Diary language</h2>
+      <p>Every entry you generate will be written in this language, regardless of what you speak or type. This is the most important setting in Ninaivugal.</p>
+    </div>
+
+    <div class="lang-grid">
+      @for (lang of languages; track lang.value) {
+        <div
+          class="lang-card"
+          [class.selected]="selectedLang() === lang.value"
+          (click)="selectLang(lang.value)"
+        >
+          @if (lang.script) {
+            <div class="lang-script">{{ lang.script }}</div>
+          }
+          <div class="lang-name">{{ lang.label }}</div>
+          <div class="lang-desc">{{ lang.desc }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Daily reminders -->
+  <div class="setting-section">
+    <div class="setting-section-head">
+      <h2>Daily reminder</h2>
+      <p>A gentle nudge to your inbox — just a friendly reminder that your pages are waiting. We'll email you once a day at the time you choose.</p>
+    </div>
+    <div class="reminder-control">
+      <div class="reminder-top">
+        <button type="button" class="rt-pill" [class.on]="reminderEnabled()" (click)="reminderEnabled.set(!reminderEnabled())" [attr.aria-pressed]="reminderEnabled()">
+          <span class="rt-track">
+            <span class="rt-thumb"></span>
+          </span>
+          <span class="rt-label">{{ reminderEnabled() ? 'On' : 'Off' }}</span>
+        </button>
+      </div>
+      <p class="reminder-desc">
+        {{ reminderEnabled() ? 'A gentle email each evening if you haven\'t written that day.' : 'No emails from us. Toggle on whenever you want the nudge.' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Save preferences -->
+  <div class="lang-save-row">
+    <div class="lang-current">
+      Language: <strong>{{ currentLangLabel }}</strong>
+    </div>
+    @if (prefsChanged || saving() || saved()) {
+      <button class="btn gold" style="padding:10px 24px;font-size:13px" (click)="savePreferences()" [disabled]="saving()">
+        @if (saving()) { Saving… }
+        @else if (saved()) { ✓ Saved }
+        @else { Save preferences }
+      </button>
+    }
+  </div>
+
+  <!-- Personal details -->
+  <div class="setting-section">
+    <div class="setting-section-head">
+      <h2>A little about you</h2>
+      <p>These details help me understand you better over time — for richer weekly and monthly reflections. Everything is optional, and it's all private to your account.</p>
+    </div>
+    <div class="personal-fields">
+      <div class="pf-field">
+        <label>Favourite things</label>
+        <textarea [(ngModel)]="details.favourites" name="favourites" placeholder="food, films, places…" rows="2"></textarea>
+      </div>
+      <div class="pf-field">
+        <label>Hobbies</label>
+        <textarea [(ngModel)]="details.hobbies" name="hobbies" placeholder="reading, cooking, running…" rows="2"></textarea>
+      </div>
+      <div class="pf-field">
+        <label>People close to you</label>
+        <textarea [(ngModel)]="details.close_friends" name="close_friends" placeholder="names or just 'my sister', 'my best friend'…" rows="1"></textarea>
+      </div>
+      <div class="pf-field">
+        <label>Music you love</label>
+        <textarea [(ngModel)]="details.music" name="music" placeholder="composers, genres, singers…" rows="1"></textarea>
+      </div>
+      <div class="pf-field">
+        <label>Sports or games</label>
+        <textarea [(ngModel)]="details.sports" name="sports" placeholder="cricket, chess…" rows="1"></textarea>
+      </div>
+      <div class="pf-field">
+        <label>Places you love or dream of</label>
+        <textarea [(ngModel)]="details.destinations" name="destinations" placeholder="hometown, a city you adore…" rows="1"></textarea>
+      </div>
+      <div class="pf-field">
+        <label>Anything else</label>
+        <textarea [(ngModel)]="details.extra" name="extra" placeholder="whatever you want me to know" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="pf-save-row">
+      <button class="btn gold" style="padding:10px 24px;font-size:13px" (click)="savePersonalDetails()" [disabled]="detailsSaving()">
+        @if (detailsSaving()) { Saving… }
+        @else if (detailsSaved()) { ✓ Saved }
+        @else { Save details }
+      </button>
+    </div>
+  </div>
+
+  <!-- Account info -->
+  @if (user()) {
+    <div class="setting-section">
+      <div class="setting-section-head">
+        <h2>Account</h2>
+        <p>Update your name or date of birth. Your email address cannot be changed.</p>
+      </div>
+      <div class="account-info">
+
+        <div class="account-edit-row">
+          <label class="account-edit-label">Name</label>
+          <input
+            class="account-edit-input"
+            type="text"
+            [(ngModel)]="editName"
+            name="editName"
+            placeholder="Your name"
+            maxlength="50"
+          />
+        </div>
+
+        <div class="account-edit-row">
+          <label class="account-edit-label">Email</label>
+          <span class="account-value-static">{{ user()!.email }}</span>
+        </div>
+
+        <div class="account-edit-row">
+          <label class="account-edit-label">Date of birth</label>
+          <input
+            class="account-edit-input account-edit-input--date"
+            type="date"
+            [(ngModel)]="editBirthday"
+            name="editBirthday"
+          />
+        </div>
+
+        <div class="account-save-row">
+          @if (accountChanged || accountSaving() || accountSaved()) {
+            <button class="btn gold" style="padding:10px 24px;font-size:13px" (click)="saveAccount()" [disabled]="accountSaving() || !editName.trim()">
+              @if (accountSaving()) { Saving… }
+              @else if (accountSaved()) { ✓ Saved }
+              @else { Save account }
+            </button>
+          }
+          <button class="btn-logout" (click)="logout()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sign out safely
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Privacy banner -->
+  <div class="privacy-banner" style="margin-top: 40px">
+    <div class="lock">✧</div>
+    <div>
+      <h4>Your entries are encrypted and private.</h4>
+      <p>Diary entries are encrypted before being stored in your private database and are scoped strictly to your account — no one else can read them. Voice processing uses Groq Whisper; diary generation uses Gemini — both are stateless API calls that do not retain your content.</p>
+    </div>
+  </div>
+
+</div>

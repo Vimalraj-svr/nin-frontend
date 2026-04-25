@@ -1,0 +1,18 @@
+<div class="lang-selector">
+  <label class="lang-selector__label">Language</label>
+  <div class="lang-selector__pills">
+    @for (opt of options; track opt.code) {
+      <button
+        class="lang-pill"
+        [class.lang-pill--active]="selected === opt.code"
+        [attr.data-lang]="opt.code"
+        (click)="select(opt.code)"
+        [id]="'lang-' + opt.code"
+        [title]="opt.label"
+        type="button">
+        <span class="lang-pill__flag">{{ opt.flag }}</span>
+        <span class="lang-pill__label">{{ opt.nativeLabel }}</span>
+      </button>
+    }
+  </div>
+</div>

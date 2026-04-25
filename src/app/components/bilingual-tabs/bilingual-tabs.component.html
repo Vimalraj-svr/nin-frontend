@@ -1,0 +1,34 @@
+<div class="bi-tabs">
+
+  @if (showTabs) {
+    <div class="bi-tabs__bar">
+      <button
+        id="tab-original"
+        class="bi-tab" [class.bi-tab--active]="activeTab === 'original'"
+        (click)="activeTab = 'original'" type="button">
+        <span>🌐 Original</span>
+      </button>
+      <button
+        id="tab-english"
+        class="bi-tab" [class.bi-tab--active]="activeTab === 'english'"
+        (click)="activeTab = 'english'" type="button">
+        <span>✨ English</span>
+      </button>
+      <div class="bi-tab__indicator" [class.bi-tab__indicator--right]="activeTab === 'english'"></div>
+    </div>
+  }
+
+  <div class="bi-tabs__content animate-fadein" [class.bi-tabs__content--rtl]="false">
+    @if (displayTitle) {
+      <h2 class="bi-tabs__title">{{ displayTitle }}</h2>
+    }
+    <div class="bi-tabs__body">
+      @for (para of displayContent.split('\n\n'); track $index) {
+        @if (para.trim()) {
+          <p>{{ para.trim() }}</p>
+        }
+      }
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,142 @@
+<div class="hist-wrap">
+
+  <!-- Header -->
+  <div class="hist-head">
+    <!-- <div class="eyebrow">Your journal</div> -->
+    <h1>History</h1>
+    <p class="lede">Every voice you've given to your thoughts.</p>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="search-box">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" type="text" placeholder="Search entries…" [(ngModel)]="searchQuery" />
+    </div>
+
+    <div class="pill-row">
+      @for (opt of langOptions; track opt.value) {
+        <button class="pill" [class.active]="filterLang === opt.value" (click)="filterLang = opt.value">{{ opt.label }}</button>
+      }
+    </div>
+
+    <div class="pill-row pill-row--mode">
+      @for (opt of modeOptions; track opt.value) {
+        <button class="pill" [class.active]="filterMode === opt.value" (click)="filterMode = opt.value">{{ opt.label }}</button>
+      }
+    </div>
+
+    @if (hiddenCount > 0) {
+      <button class="pill pill--ghost" (click)="showHidden = !showHidden">
+        {{ showHidden ? 'Hide hidden' : hiddenCount + ' hidden' }}
+      </button>
+    }
+  </div>
+
+  <!-- Loading skeletons -->
+  @if (loading) {
+    <div class="timeline">
+      @for (i of [1,2,3]; track i) {
+        <div class="month-block">
+          <div class="month-label-skel skel"></div>
+          @for (j of [1,2]; track j) {
+            <div class="tl-row">
+              <div class="date-col">
+                <div class="skel" style="width:28px;height:28px;border-radius:50%;margin:0 auto 4px"></div>
+                <div class="skel" style="width:28px;height:10px;border-radius:4px;margin:0 auto"></div>
+              </div>
+              <div class="tl-spine">
+                <div class="tl-dot"></div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="entry-card skel-card">
+                <div class="skel" style="width:55%;height:14px;border-radius:4px;margin-bottom:10px"></div>
+                <div class="skel" style="width:90%;height:12px;border-radius:4px;margin-bottom:6px"></div>
+                <div class="skel" style="width:75%;height:12px;border-radius:4px"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error) {
+    <div class="empty-hint fade-in">
+      <div class="empty-glyph">⚠</div>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="load()">Try again</button>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!loading && !error && filteredEntries.length === 0) {
+    <div class="empty-hint fade-in">
+      <div class="empty-glyph">◷</div>
+      <p>No entries match your filters.</p>
+    </div>
+  }
+
+  <!-- Timeline -->
+  @if (!loading && !error && groupedEntries.length > 0) {
+    <div class="timeline fade-in">
+      @for (group of groupedEntries; track group.monthKey) {
+        <div class="month-block">
+          <div class="month-label">
+            <span class="month-name">{{ group.label }}</span>
+            <span class="month-count">{{ group.entries.length }}</span>
+          </div>
+
+          @for (entry of group.entries; track entry.id; let last = $last) {
+            <div class="tl-row" (click)="openEntry(entry.id)" [class.is-hidden]="entry.is_hidden">
+              <!-- Date column -->
+              <div class="date-col">
+                <div class="day-num">{{ entryDay(entry.created_at) }}</div>
+                <div class="day-dow">{{ entryDow(entry.created_at) }}</div>
+                <div class="day-time">{{ entryTime(entry.created_at) }}</div>
+              </div>
+
+              <!-- Spine -->
+              <div class="tl-spine">
+                <div class="tl-dot"></div>
+                @if (!last) { <div class="tl-line"></div> }
+              </div>
+
+              <!-- Entry card -->
+              <div class="entry-card">
+                <div class="entry-card-top">
+                  @if (moodOf(entry); as mood) {
+                    <app-orb [hue]="mood.hue" [warmth]="mood.warmth" [size]="'xs'"></app-orb>
+                  }
+                  <span class="entry-lang">{{ entryLang(entry) }}</span>
+                  @if (emotionOf(entry); as emo) {
+                    <span class="emotion-chip" [title]="emo.label">{{ emo.emoji }}</span>
+                  }
+                  @if (entry.is_hidden) {
+                    <span class="hidden-badge">hidden</span>
+                  }
+                  <div class="entry-actions">
+                    @if (deleteConfirmId === entry.id) {
+                      <button class="action-btn action-btn--danger" (click)="doDelete($event, entry.id)">Delete</button>
+                      <button class="action-btn" (click)="cancelDelete($event)">Cancel</button>
+                    } @else {
+                      <button class="action-btn action-btn--del" (click)="confirmDelete($event, entry.id)" [disabled]="deletingId === entry.id">
+                        {{ deletingId === entry.id ? '…' : '✕' }}
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <h3 class="entry-title">{{ entryTitle(entry) }}</h3>
+                <p class="entry-preview">{{ entryPreview(entry) }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <button class="fab" (click)="compose()" title="New entry">✍</button>
+</div>

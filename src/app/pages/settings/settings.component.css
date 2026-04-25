@@ -1,0 +1,344 @@
+.setting-section {
+  margin-top: 3.0000rem;
+}
+.setting-section-head {
+  margin-bottom: 1.5000rem;
+}
+.setting-section-head h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.3750rem;
+  color: var(--ink);
+  margin: 0 0 0.5000rem;
+}
+.setting-section-head p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.9375rem;
+  color: var(--ink-mute);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 32.5000rem;
+}
+
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12.5000rem, 1fr));
+  gap: 0.7500rem;
+}
+
+.lang-card {
+  border: 0.0625rem solid var(--rule);
+  border-radius: 0.6250rem;
+  padding: 1.0000rem 1.1250rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--paper-soft);
+}
+.lang-card:hover { border-color: var(--ink-mute); }
+.lang-card.selected {
+  border-color: var(--gold-deep, #b8860b);
+  background: oklch(0.97 0.04 70 / 0.4);
+}
+
+.lang-script {
+  font-family: var(--tamil);
+  font-size: 1.2500rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.3750rem;
+  line-height: 1.2;
+}
+.lang-name {
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 0.3750rem;
+}
+.lang-desc {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.7500rem;
+  color: var(--ink-ghost);
+  line-height: 1.5;
+}
+
+.lang-save-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.2500rem;
+  min-height: 2.5000rem;
+}
+.lang-current {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+}
+.lang-current strong {
+  color: var(--ink);
+}
+
+.gender-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.6250rem, 1fr));
+  gap: 0.7500rem;
+}
+
+.gender-card {
+  border: 0.0625rem solid var(--rule);
+  border-radius: 0.6250rem;
+  background: var(--paper-soft);
+  padding: 0.8750rem 1.0000rem;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.gender-card:hover {
+  border-color: var(--ink-mute);
+}
+
+.gender-card.selected {
+  border-color: var(--gold-deep, #b8860b);
+  background: oklch(0.97 0.04 70 / 0.4);
+  color: var(--ink);
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7500rem;
+  border: 0.0625rem solid var(--rule);
+  border-radius: 0.6250rem;
+  padding: 1.2500rem 1.5000rem;
+  background: var(--paper-soft);
+}
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 1.0000rem;
+}
+.account-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  width: 3.7500rem;
+  flex-shrink: 0;
+}
+.account-value {
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.account-row--actions {
+  padding-top: 0.5000rem;
+}
+
+.account-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 0.0625rem solid var(--rule);
+  padding-bottom: 0.625rem;
+}
+.account-edit-row:last-of-type { border-bottom: none; }
+
+.account-edit-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  width: 5rem;
+  flex-shrink: 0;
+}
+.account-value-static {
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  color: var(--ink-mute);
+}
+.account-edit-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  color: var(--ink);
+  padding: 0.25rem 0;
+}
+.account-edit-input::placeholder { color: var(--ink-ghost); font-style: italic; }
+.account-edit-input--date {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+.account-save-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5000rem;
+  border: 0.0625rem solid oklch(0.7 0.06 24);
+  border-radius: 62.4375rem;
+  padding: 0.5625rem 1.0000rem;
+  background: oklch(0.985 0.01 20);
+  color: oklch(0.42 0.06 24);
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  border-color: oklch(0.62 0.08 24);
+  background: oklch(0.97 0.02 20);
+  color: oklch(0.36 0.08 24);
+  transform: translateY(-0.0625rem);
+}
+
+/* ─── Reminder control ─── */
+.reminder-control { display: flex; flex-direction: column; gap: 0.6250rem; }
+
+.reminder-top {
+  display: flex;
+  align-items: center;
+  gap: 1.2500rem;
+  flex-wrap: wrap;
+}
+
+/* The pill toggle button — full reset, then custom */
+.rt-pill {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6250rem;
+  outline: none;
+}
+.rt-pill:focus-visible .rt-track {
+  box-shadow: 0 0 0 0.1250rem var(--paper), 0 0 0 0.2500rem var(--ink);
+}
+
+/* Track */
+.rt-track {
+  position: relative;
+  width: 2.7500rem;
+  height: 1.5000rem;
+  border-radius: 62.4375rem;
+  background: var(--rule);
+  transition: background 0.25s ease;
+  flex-shrink: 0;
+}
+.rt-pill.on .rt-track {
+  background: var(--ink);
+}
+
+/* Thumb */
+.rt-thumb {
+  position: absolute;
+  top: 0.2500rem;
+  left: 0.2500rem;
+  width: 1.0000rem;
+  height: 1.0000rem;
+  border-radius: 50%;
+  background: var(--paper-soft);
+  box-shadow: 0 0.0625rem 0.2500rem rgba(0,0,0,0.18);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s;
+}
+.rt-pill.on .rt-thumb {
+  transform: translateX(1.2500rem);
+  background: var(--paper);
+}
+
+/* State label */
+.rt-label {
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  transition: color 0.2s;
+  user-select: none;
+}
+.rt-pill.on .rt-label { color: var(--ink); }
+
+/* Description beneath the row */
+.reminder-desc {
+  font-family: var(--serif);
+  font-size: 0.8750rem;
+  font-style: italic;
+  color: var(--ink-ghost);
+  margin: 0;
+  line-height: 1.5;
+}
+
+
+/* Personal details */
+.personal-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2500rem;
+}
+
+.pf-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6250rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.5000rem;
+}
+
+.pf-field textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 0.0625rem solid var(--rule);
+  background: transparent;
+  outline: none;
+  font-family: var(--serif);
+  font-size: 1.0000rem;
+  color: var(--ink);
+  line-height: 1.5;
+  resize: none;
+  padding: 0.3750rem 0;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.pf-field textarea:focus { border-bottom-color: var(--ink); }
+.pf-field textarea::placeholder { color: var(--ink-ghost); font-style: italic; }
+
+.pf-save-row {
+  margin-top: 1.5000rem;
+}
+
+@media (max-width: 30.0000rem) {
+  .lang-grid { grid-template-columns: 1fr 1fr; gap: 0.6250rem; }
+  .gender-grid { grid-template-columns: 1fr 1fr; gap: 0.6250rem; }
+  .lang-save-row { flex-direction: column; align-items: flex-start; gap: 0.7500rem; }
+  .account-info { padding: 1.0000rem; }
+  .setting-section { margin-top: 2.0000rem; }
+}

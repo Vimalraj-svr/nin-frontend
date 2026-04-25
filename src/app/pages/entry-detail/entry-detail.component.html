@@ -1,0 +1,259 @@
+@if (loading) {
+  <div class="entry-loading">
+    <div class="loading-orb"></div>
+    <span>Opening this memory…</span>
+  </div>
+} @else if (notFound) {
+  <div class="entry-loading">
+    <div class="loading-orb" style="opacity:0.4"></div>
+    <span>This memory couldn't be loaded.</span>
+    <button (click)="back()" style="margin-top:12px;background:none;border:1px solid var(--rule);padding:8px 20px;font-family:var(--serif);font-style:italic;cursor:pointer;color:var(--ink-soft);border-radius:4px">← Go back</button>
+  </div>
+} @else {
+  <div class="entry-view fade-in" [class.entry-view--hidden]="isHidden()">
+
+    <!-- ── Hidden banner ──────────────────────────────── -->
+    @if (isHidden()) {
+      <div class="hidden-banner">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        This memory is hidden from your journal view
+        <button (click)="toggleHide()">Unhide</button>
+      </div>
+    }
+
+    <!-- ── Header ─────────────────────────────────────── -->
+    <div class="entry-view-head">
+      <div class="date-col">
+        <div class="d">{{ dateNum }}</div>
+        <div class="m">{{ dateLabel }}</div>
+      </div>
+
+      <div class="head-content">
+        <h1>{{ title }}</h1>
+        <div class="subhead">{{ subhead }}</div>
+        @if (tamSub) { <div class="tam-sub">{{ tamSub }}</div> }
+        @if (titleEnglish) { <div class="entry-english-title">{{ titleEnglish }}</div> }
+
+        <!-- Emotion flag strip -->
+        @if (apiEntry()) {
+          <div class="emotion-strip">
+            @for (ef of emotionFlags; track ef.value) {
+              <button
+                class="emotion-chip"
+                [class.emotion-chip--active]="emotionFlag() === ef.value"
+                [style.--ef-color]="ef.color"
+                (click)="setEmotion(ef.value)"
+                [title]="ef.label">
+                {{ ef.emoji }} <span>{{ ef.label }}</span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Emoji row -->
+        @if (entryEmojis().length > 0) {
+          <div class="emoji-row">
+            @for (em of entryEmojis(); track $index) {
+              <span class="emoji-badge" (click)="removeEmoji($index)" title="Remove">{{ em }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mood-stack">
+        <app-orb [hue]="mood.hue" [warmth]="mood.warmth" size="lg" [breathing]="true" />
+        <div class="label">Detected mood</div>
+        <div class="name">{{ mood.label }}</div>
+        @if (currentEmotionInfo) {
+          <div class="flagged-emotion" [style.color]="currentEmotionInfo.color">
+            {{ currentEmotionInfo.emoji }} {{ currentEmotionInfo.label }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ── Body / Editor ──────────────────────────────── -->
+    <div class="entry-body-wrap">
+      @if (!editMode) {
+        <div class="entry-body">
+          @for (para of bodyParas; track $index) {
+            <p>
+              @if ($index === 0) {
+                <span class="drop">{{ dropChar(para) }}</span>{{ restOfPara(para) }}
+              } @else {
+                {{ para }}
+              }
+            </p>
+          }
+        </div>
+      } @else {
+        <div class="editor-wrap">
+          <div class="editor-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Editing this memory
+          </div>
+          <input class="editor-title-input" [(ngModel)]="editTitle" placeholder="Title…" maxlength="120" />
+          <textarea class="editor-textarea" [(ngModel)]="editText" rows="12" placeholder="Write your memory…"></textarea>
+          <div class="editor-actions">
+            <button class="btn-save" (click)="saveEdit()" [disabled]="editSaving">
+              {{ editSaving ? 'Saving…' : 'Save changes' }}
+            </button>
+            <button class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+          </div>
+        </div>
+      }
+
+      <!-- English translation (bilingual) -->
+      @if (englishParas.length > 0 && !editMode) {
+        <div class="entry-translation">
+          <div class="entry-translation-rule"><span>In English</span></div>
+          @for (para of englishParas; track $index) { <p>{{ para }}</p> }
+        </div>
+      }
+    </div>
+
+    <!-- ── Image gallery ──────────────────────────────── -->
+    @if (images().length > 0 || uploadingImage) {
+      <div class="image-gallery">
+        @for (img of images(); track img.public_id) {
+          <div class="image-tile">
+            <img [src]="img.url" [alt]="'Memory image'" loading="lazy" />
+            @if (apiEntry()) {
+              <button class="image-remove" (click)="deleteImage(img)" title="Remove">✕</button>
+            }
+          </div>
+        }
+        @if (uploadingImage && imageUploadEnabled) {
+          <div class="image-tile image-tile--uploading">
+            <div class="upload-spinner"></div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Full emoji picker overlay -->
+    @if (showEmojiPicker) {
+      <div class="emoji-picker-backdrop" (click)="showEmojiPicker = false"></div>
+      <div class="emoji-picker">
+        <div class="emoji-picker-top">
+          <input
+            class="emoji-search"
+            type="text"
+            placeholder="Search emojis…"
+            [(ngModel)]="emojiSearch"
+            (click)="$event.stopPropagation()"
+          />
+          <button class="emoji-picker-close" (click)="showEmojiPicker = false">✕</button>
+        </div>
+        @if (!emojiSearch) {
+          <div class="emoji-category-tabs">
+            @for (cat of emojiCategories; track cat.id) {
+              <button
+                class="emoji-cat-tab"
+                [class.active]="activeCategoryId === cat.id"
+                (click)="activeCategoryId = cat.id"
+                [title]="cat.label"
+              >{{ cat.icon }}</button>
+            }
+          </div>
+        }
+        <div class="emoji-grid">
+          @for (em of filteredEmojis; track em) {
+            <button class="emoji-cell" (click)="addEmoji(em)">{{ em }}</button>
+          }
+          @if (filteredEmojis.length === 0) {
+            <div class="emoji-empty">No results for "{{ emojiSearch }}"</div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Action bar ─────────────────────────────────── -->
+    <div class="action-bar">
+      <button class="action-btn" (click)="back()" title="Back">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+
+      @if (apiEntry()) {
+        <div class="action-group">
+          @if (!editMode) {
+            <button class="action-btn" (click)="startEdit()" title="Edit memory">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Edit
+            </button>
+          }
+          <button class="action-btn" (click)="toggleEmojiPicker()" title="Add emoji">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Emoji
+          </button>
+          <button class="action-btn action-btn--soon" title="Image upload coming soon" [disabled]="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Image <span class="soon-badge">soon</span>
+          </button>
+          <button class="action-btn" (click)="shareEntry()" title="Share">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            {{ shareCopied ? '✓ Copied' : 'Share' }}
+          </button>
+          <button class="action-btn" (click)="toggleHide()" title="Hide from journal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            {{ isHidden() ? 'Unhide' : 'Hide' }}
+          </button>
+          @if (!deleteConfirm) {
+            <button class="action-btn action-btn--danger" (click)="confirmDelete()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              Delete
+            </button>
+          } @else {
+            <button class="action-btn action-btn--danger-confirm" (click)="deleteEntry()">Confirm delete</button>
+            <button class="action-btn" (click)="cancelDelete()">Cancel</button>
+          }
+        </div>
+
+        <span class="encrypted-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Encrypted · private
+        </span>
+      }
+    </div>
+
+    <!-- hidden file input -->
+    <input #imageInput type="file" accept="image/*" style="display:none" [disabled]="!imageUploadEnabled" (change)="imageUploadEnabled && onImageSelected($event)">
+
+    <!-- ── Comments ───────────────────────────────────── -->
+    @if (apiEntry()) {
+      <div class="comments-section">
+        <div class="comments-head">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Notes to self
+          @if (comments().length > 0) { <span class="comment-count">{{ comments().length }}</span> }
+        </div>
+
+        @for (c of comments(); track c.id) {
+          <div class="comment-item">
+            <div class="comment-bubble">{{ c.text }}</div>
+            <div class="comment-meta">
+              {{ commentDate(c.created_at) }}
+              <button class="comment-delete" (click)="removeComment(c.id)" title="Remove">✕</button>
+            </div>
+          </div>
+        }
+
+        <div class="comment-compose">
+          <textarea
+            class="comment-input"
+            [(ngModel)]="newComment"
+            placeholder="Add a note to this memory…"
+            rows="2"
+            (keydown.meta.enter)="submitComment()"
+            (keydown.ctrl.enter)="submitComment()">
+          </textarea>
+          <button class="comment-submit" (click)="submitComment()" [disabled]="!newComment.trim() || addingComment">
+            {{ addingComment ? '…' : 'Add' }}
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+}

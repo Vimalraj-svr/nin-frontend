@@ -1,0 +1,175 @@
+<div class="auth">
+
+  <!-- Left editorial pane -->
+  <aside class="auth-aside">
+    <div class="aside-orb"></div>
+
+    <div class="brand-row">
+      <img src="/assets/logos/primary_logo.png" class="brand-logo" alt="Ninaivugal" />
+    </div>
+
+    <div class="aside-verse">
+      <div class="eyebrow">begin a private practice</div>
+      <h1>A diary<br>in your <em>own tongue.</em></h1>
+      <p class="lede">Tamil, English, Hindi, or a gentle mix. Ninaivugal reads you as you are and keeps every word on this device.</p>
+    </div>
+
+    <div class="aside-foot">
+      <!-- <div class="dot-row">
+        <span class="priv-dot"></span>
+        On-device · Private · No tracking
+      </div> -->
+      <div>Est · 2026</div>
+    </div>
+  </aside>
+
+  <!-- Right form pane -->
+  <div class="auth-form-wrap">
+    <div class="auth-tabs">
+      <a routerLink="/login" class="auth-tab">Sign in</a>
+      <span class="auth-tab on">Create</span>
+    </div>
+
+    <div class="form-inner fade">
+      <div class="form-head">
+        <div class="step">01 · Create an account</div>
+        <h2>Begin your <em>practice.</em></h2>
+      </div>
+
+      <form (ngSubmit)="submit()">
+        <div class="field">
+          <label>
+            Your name
+            <span class="hint">what shall we call you?</span>
+          </label>
+          <div class="input-wrap">
+            <input
+              type="text"
+              [(ngModel)]="name"
+              name="name"
+              placeholder="Your name"
+              autocomplete="name"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <div class="input-wrap">
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="you@wherever.com"
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Birthday
+            <span class="hint">optional · for a special surprise</span>
+          </label>
+          <div class="input-wrap">
+            <input
+              type="date"
+              [(ngModel)]="birthday"
+              name="birthday"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Writing language
+            <span class="hint">pick one</span>
+          </label>
+          <div class="chip-group">
+            @for (lang of langChips; track lang.id) {
+              <button
+                type="button"
+                class="chip"
+                [class.on]="selectedLangId === lang.id"
+                (click)="selectLang(lang.id)"
+              >
+                <span>{{ lang.label }}</span>
+                @if (lang.script) {
+                  <span class="script">· {{ lang.script }}</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Passphrase
+            <span class="hint">min. 8 characters</span>
+          </label>
+          <div class="input-wrap">
+            <input
+              [type]="revealPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="a phrase only you know"
+              (ngModelChange)="onPasswordChange()"
+            />
+            <button type="button" class="toggle-reveal" (click)="revealPassword = !revealPassword">
+              {{ revealPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          @if (password.length > 0) {
+            <div class="strength-bar">
+              @for (i of strengthSegments; track i) {
+                <div class="seg" [class.on]="i < passwordStrength"></div>
+              }
+            </div>
+            <div class="strength-label">{{ strengthLabel }}</div>
+          }
+        </div>
+
+        <div class="field">
+          <label>Confirm passphrase</label>
+          <div class="input-wrap">
+            <input
+              [type]="revealPassword ? 'text' : 'password'"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              placeholder="once more"
+            />
+          </div>
+          @if (confirmPassword.length > 0 && password !== confirmPassword) {
+            <div class="mismatch-label">Doesn't match yet</div>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="auth-error">{{ error() }}</div>
+        }
+
+        <button class="primary-btn" type="submit" [disabled]="!canSubmit">
+          @if (loading()) {
+            Creating…
+          } @else {
+            Create account
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          }
+        </button>
+      </form>
+
+      <div class="form-foot">
+        <span>Already have a diary?</span>
+        <a routerLink="/login">Come back in →</a>
+      </div>
+
+      <div class="privacy-line">
+        <span class="priv-dot"></span>
+        Your entries are encrypted and private to your account
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,49 @@
+.lang-selector { display: flex; flex-direction: column; gap: 0.65rem; }
+
+.lang-selector__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.lang-selector__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lang-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-input);
+  border: 0.0625rem solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-sans);
+}
+
+.lang-pill:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background: rgba(124,58,237,0.1);
+  transform: translateY(-0.0625rem);
+}
+
+.lang-pill--active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff !important;
+  border-color: transparent;
+  box-shadow: 0 0.2500rem 0.7500rem rgba(124,58,237,0.4);
+  transform: translateY(-0.0625rem);
+}
+
+.lang-pill__flag { font-size: 1rem; }
+.lang-pill__label { font-family: var(--font-tamil); }

@@ -1,0 +1,57 @@
+<a class="diary-card glass-card" [routerLink]="['/entry', entry.id]">
+
+  <!-- Image strip (shown when images exist) -->
+  @if (previewImages.length > 0) {
+    <div class="diary-card__images">
+      @for (img of previewImages; track img.public_id) {
+        <img class="diary-card__thumb" [src]="img.url" [alt]="displayTitle" loading="lazy" />
+      }
+      @if (entry.images.length > 3) {
+        <div class="diary-card__more-imgs">+{{ entry.images.length - 3 }}</div>
+      }
+    </div>
+  }
+
+  <div class="diary-card__header">
+    <div class="diary-card__badges">
+      <span class="lang-badge" [ngClass]="langInfo.class">{{ langInfo.label }}</span>
+      <span class="emo-badge" [ngClass]="'emo-badge--' + (entry.mood_summary || 'neutral').toLowerCase().split(' ')[0]">
+        {{ entry.mood_summary ?? 'neutral' }}
+      </span>
+    </div>
+    <div class="diary-card__meta">
+      <span class="diary-card__mode">{{ modeLabel }}</span>
+      <time class="diary-card__date">{{ formattedDate }}</time>
+    </div>
+  </div>
+
+  <h3 class="diary-card__title">{{ displayTitle }}</h3>
+  <p class="diary-card__excerpt">{{ displayExcerpt }}</p>
+
+  <!-- Extras row: emotion flag + emojis -->
+  @if (hasExtras) {
+    <div class="diary-card__extras">
+      @if (emotionInfo) {
+        <span class="card-emotion-chip" [style.color]="emotionInfo.color">
+          {{ emotionInfo.emoji }} {{ emotionInfo.label }}
+        </span>
+      }
+      @if (entry.emojis.length > 0) {
+        <span class="card-emojis">
+          @for (em of entry.emojis.slice(0, 5); track $index) { {{ em }} }
+        </span>
+      }
+    </div>
+  }
+
+  <div class="diary-card__footer">
+    <span class="diary-card__readmore">Read full entry →</span>
+    <button class="diary-card__delete btn-ghost" (click)="onDelete($event)" title="Delete entry" type="button">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+        <path d="M9 6V4h6v2"/>
+      </svg>
+    </button>
+  </div>
+
+</a>
