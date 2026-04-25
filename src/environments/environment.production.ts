@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://ninaivugal-api.onrender.com/api',
+  apiUrl: 'https://nin-backend-akn9.onrender.com/api',
 };
