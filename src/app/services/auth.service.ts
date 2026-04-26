@@ -108,8 +108,22 @@ export class AuthService {
 
   loadCurrentUser(): void {
     this.http.get<UserProfile>(`${this.apiUrl}/me`).pipe(
-      catchError(() => of(null))
+      catchError(err => {
+        if (err.status === 401) {
+          localStorage.removeItem(this.TOKEN_KEY);
+          this._isAuth.next(false);
+        }
+        return of(null);
+      })
     ).subscribe(u => this._user.next(this.normalizeUser(u)));
+  }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/reset-password`, { token, new_password: newPassword });
   }
 
   updateProfile(data: Partial<{
