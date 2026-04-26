@@ -116,7 +116,13 @@ export class AppComponent implements OnInit {
     weekday: 'long', day: 'numeric', month: 'long'
   });
 
-  constructor(public auth: AuthService, private router: Router, private api: DiaryApiService) {}
+  constructor(public auth: AuthService, private router: Router, private api: DiaryApiService) {
+    // Set synchronously before first render so unauthenticated users never
+    // see the sidebar layout flash before the guard redirects to /login.
+    const path = window.location.pathname;
+    const onAuthRoute = AUTH_ROUTES.some(r => path.startsWith(r));
+    this.isAuthPage.set(onAuthRoute || !auth.getToken());
+  }
 
   ngOnInit() {
     // Eagerly refresh user profile so sidebar is populated on any page reload
