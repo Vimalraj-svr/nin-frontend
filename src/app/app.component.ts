@@ -18,7 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'settings', label: 'Settings',  sub: 'preferences',    route: '/settings', k: 'S', icon: '⚙' },
 ];
 
-const AUTH_ROUTES = ['/login', '/register', '/shared'];
+const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/reset-password'];
 
 @Component({
   selector: 'app-root',
