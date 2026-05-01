@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DiaryApiService, moodFromSummary } from '../../services/diary-api.service';
 import { SocialApiService } from '../../services/social-api.service';
 import { DiaryEntry, LANGUAGE_DISPLAY, EMOTION_FLAGS } from '../../models/diary.model';
-import { OrbComponent } from '../../components/orb/orb.component';
+import { MoodEmojiComponent } from '../../components/mood-emoji/mood-emoji.component';
 
 const EMOTION_FLAG_MAP = new Map(EMOTION_FLAGS.map(f => [f.value, f]));
 
@@ -17,7 +17,7 @@ export interface EntryGroup {
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [FormsModule, OrbComponent],
+  imports: [FormsModule, MoodEmojiComponent],
   templateUrl: './history.component.html',
   styleUrl: './history.component.css',
 })

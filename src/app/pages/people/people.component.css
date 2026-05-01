@@ -1,29 +1,29 @@
 .people-wrap {
-  max-width: 42rem;
+  max-width: 80%;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 8rem;
+  padding: 0.75rem 1.5rem 6rem;
 }
 
 .people-head {
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
 }
 
 .people-head h1 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(2rem, 7vw, 3rem);
+  font-size: clamp(1.375rem, 4vw, 1.75rem);
   letter-spacing: -0.03em;
   color: var(--ink);
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.25rem;
 }
 
 .lede {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: var(--ink-mute);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* ── Tabs ──────────────────────────────────────────── */
@@ -31,7 +31,7 @@
   display: flex;
   gap: 0.25rem;
   border-bottom: 0.0625rem solid var(--rule);
-  margin-bottom: 2rem;
+  margin-bottom: 0.875rem;
 }
 
 .tab-btn {
@@ -73,7 +73,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .search-icon {
@@ -95,66 +95,197 @@
   outline: none;
   transition: border-color 0.15s;
 }
-
 .search-input:focus { border-color: var(--ink-mute); }
 .search-input::placeholder { color: var(--ink-ghost); }
 
-.search-spinner {
-  position: absolute;
-  right: 0.875rem;
-  width: 0.875rem;
-  height: 0.875rem;
-  border: 0.125rem solid var(--rule);
-  border-top-color: var(--gold-deep, #b8860b);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+/* ── User grid (Discover) ──────────────────────────── */
+.user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 0.625rem;
+  margin-bottom: 1rem;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Profile list ──────────────────────────────────── */
-.profile-list {
+.user-card {
+  border: 0.0625rem solid var(--rule);
+  border-radius: 0.875rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: var(--paper);
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
 }
 
-.profile-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.875rem;
-  border-bottom: 0.0625rem solid var(--rule);
-  cursor: pointer;
-  transition: background 0.12s;
-  border-radius: 1rem;
+.user-card:hover {
+  box-shadow: 0 0.25rem 1rem oklch(0.5 0.04 var(--vh, 56) / 0.12);
+  transform: translateY(-0.125rem);
 }
 
-.profile-row:hover { background: var(--paper-soft); }
-.profile-row:last-child { border-bottom: none; }
+.card-band {
+  height: 3rem;
+  background: linear-gradient(
+    140deg,
+    oklch(0.94 0.035 var(--vh, 56)) 0%,
+    oklch(0.97 0.015 calc(var(--vh, 56) + 20)) 100%
+  );
+  flex-shrink: 0;
+}
 
-.profile-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
+.card-avi {
+  width: 2.875rem;
+  height: 2.875rem;
   border-radius: 50%;
-  background: oklch(0.92 0.05 70);
-  border: 0.0625rem solid var(--rule);
+  background: oklch(0.88 0.06 var(--vh, 56));
+  color: oklch(0.38 0.1 var(--vh, 56));
+  border: 0.1875rem solid var(--paper);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
   font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--gold-deep, #b8860b);
+  font-weight: 700;
+  margin: -1.4375rem auto 0;
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
 }
 
-.restricted-avatar {
-  background: oklch(0.92 0.02 0);
-  color: var(--ink-ghost);
+.card-body {
+  padding: 0.5rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3125rem;
+  flex: 1;
 }
 
-.profile-info {
+.card-name {
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  color: var(--ink);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.card-meta {
+  display: flex;
+  gap: 0.3125rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cm {
+  font-family: var(--mono);
+  font-size: 0.4375rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  background: var(--paper-soft);
+  border: 0.0625rem solid var(--rule);
+  border-radius: 1rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.cm--streak {
+  color: var(--gold-deep, #b8860b);
+  border-color: oklch(0.82 0.1 56 / 0.4);
+  background: oklch(0.96 0.04 56 / 0.4);
+}
+
+.card-foot {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.cbtn {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 62.5rem;
+  padding: 0.375rem 0;
+  border: 0.0625rem solid;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cbtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cbtn--off {
+  background: oklch(0.5 0.1 var(--vh, 56));
+  border-color: oklch(0.5 0.1 var(--vh, 56));
+  color: #fff;
+}
+.cbtn--off:hover:not(:disabled) {
+  background: oklch(0.42 0.1 var(--vh, 56));
+  border-color: oklch(0.42 0.1 var(--vh, 56));
+}
+
+.cbtn--on {
+  background: transparent;
+  border-color: var(--rule);
+  color: var(--ink-ghost);
+}
+.cbtn--on:hover:not(:disabled) {
+  border-color: oklch(0.7 0.1 25);
+  color: oklch(0.5 0.12 25);
+}
+
+/* ── Kin list (Following / Followers / Restricted) ─── */
+.kin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.kin-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 1rem;
+  border: 0.0625rem solid var(--rule);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  background: var(--paper);
+  transition: box-shadow 0.15s;
+}
+
+.kin-row:hover {
+  box-shadow: 0 0.125rem 0.5rem oklch(0.5 0.04 56 / 0.08);
+}
+
+.kin-row--restricted { cursor: default; }
+.kin-row--restricted:hover { box-shadow: none; }
+
+.kin-avi {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: oklch(0.91 0.04 var(--vh, 56));
+  color: oklch(0.4 0.08 var(--vh, 56));
+  border: 0.0625rem solid oklch(0.82 0.04 var(--vh, 56) / 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.kin-avi--grey {
+  background: oklch(0.92 0.01 0);
+  color: var(--ink-ghost);
+  border-color: var(--rule);
+}
+
+.kin-info {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -162,7 +293,7 @@
   gap: 0.1875rem;
 }
 
-.profile-name {
+.kin-name {
   font-family: var(--serif);
   font-size: 0.9375rem;
   color: var(--ink);
@@ -173,11 +304,11 @@
 
 .mutual-badge {
   font-family: var(--mono);
-  font-size: 0.5rem;
+  font-size: 0.4375rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: oklch(0.52 0.14 150);
-  background: oklch(0.94 0.05 150 / 0.4);
+  color: oklch(0.48 0.14 150);
+  background: oklch(0.94 0.05 150 / 0.35);
   border: 0.0625rem solid oklch(0.75 0.1 150 / 0.5);
   border-radius: 0.25rem;
   padding: 0.125rem 0.375rem;
@@ -186,15 +317,15 @@
 
 .restricted-label {
   font-family: var(--mono);
-  font-size: 0.5rem;
+  font-size: 0.4375rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-ghost);
 }
 
-.profile-actions {
+.kin-acts {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.375rem;
   flex-shrink: 0;
 }
 
@@ -211,7 +342,6 @@
   transition: all 0.15s;
   white-space: nowrap;
 }
-
 .btn-pill:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-pill--gold {
@@ -242,7 +372,7 @@
 /* ── Empty / hint states ───────────────────────────── */
 .empty-hint {
   text-align: center;
-  padding: 4rem 1rem;
+  padding: 3rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -250,7 +380,7 @@
 }
 
 .empty-glyph {
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: var(--gold-deep, #b8860b);
   opacity: 0.5;
 }
@@ -267,79 +397,69 @@
 
 .discover-hint {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  padding: 3rem 1rem;
-  text-align: center;
+  justify-content: center;
+  padding: 2rem 1rem;
 }
 
 .discover-glyph {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: var(--ink-ghost);
+  animation: spin 1.4s linear infinite;
 }
 
-.discover-hint p {
-  font-family: var(--serif);
-  font-style: italic;
-  color: var(--ink-ghost);
-  font-size: 0.875rem;
-  max-width: 22rem;
-  line-height: 1.6;
-  margin: 0;
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Invite section ────────────────────────────────── */
+.invite-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0.0625rem solid var(--rule);
 }
 
-/* ── Invite pane ───────────────────────────────────────── */
-.invite-pane {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 2.5rem 1rem;
-  text-align: center;
+.invite-section-head {
+  margin-bottom: 0.625rem;
 }
 
-.invite-icon {
-  font-size: 1.75rem;
-  color: var(--gold-deep, #b8860b);
-  opacity: 0.6;
-}
-
-.invite-desc {
-  font-family: var(--serif);
-  font-size: 0.9375rem;
+.invite-section-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--ink-mute);
-  margin: 0;
-  max-width: 22rem;
-  line-height: 1.6;
 }
 
-.invite-desc strong,
-.invite-found strong,
-.invite-sent strong { color: var(--ink); font-weight: 600; }
-
-.invite-found {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 0.9375rem;
-  color: oklch(0.52 0.14 150);
-  margin: 0;
-  max-width: 22rem;
-  line-height: 1.6;
+.invite-row {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
 }
 
+.invite-email-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.invite-found,
 .invite-sent {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 0.9375rem;
-  color: var(--ink-mute);
-  margin: 0;
-  max-width: 22rem;
+  font-size: 0.875rem;
+  margin: 0.625rem 0 0;
   line-height: 1.6;
 }
 
+.invite-found { color: oklch(0.48 0.14 150); }
+.invite-found strong,
+.invite-sent strong { color: var(--ink); font-weight: 600; }
+.invite-sent { color: var(--ink-mute); }
 
 @media (max-width: 30rem) {
-  .people-wrap { padding: 1.5rem 1rem 7rem; }
-  .profile-actions { flex-direction: column; gap: 0.25rem; }
+  .people-wrap { padding: 0.75rem 1rem 7rem; }
+  .user-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .kin-acts { flex-direction: column; gap: 0.25rem; }
+}
+
+@media (min-width: 60rem) {
+  .user-grid { grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); }
 }

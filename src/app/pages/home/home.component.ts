@@ -1,8 +1,9 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { OrbComponent } from '../../components/orb/orb.component';
 import { OnboardingComponent } from '../../components/onboarding/onboarding.component';
+import { MoodEmojiComponent } from '../../components/mood-emoji/mood-emoji.component';
+import { OrbComponent } from '../../components/orb/orb.component';
 import { DiaryApiService, moodFromSummary, MoodInfo } from '../../services/diary-api.service';
 import { DiaryEntry } from '../../models/diary.model';
 import { AuthService } from '../../services/auth.service';
@@ -21,7 +22,7 @@ const MODE_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [OrbComponent, OnboardingComponent, DatePipe],
+  imports: [MoodEmojiComponent, OnboardingComponent, OrbComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

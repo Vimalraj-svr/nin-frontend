@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { OrbComponent } from '../../components/orb/orb.component';
+import { MoodEmojiComponent } from '../../components/mood-emoji/mood-emoji.component';
 import { DiaryApiService, moodFromSummary, MoodInfo } from '../../services/diary-api.service';
 import { DiaryEntry } from '../../models/diary.model';
 import { AuthService } from '../../services/auth.service';
@@ -21,7 +21,7 @@ const MODE_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-library',
   standalone: true,
-  imports: [OrbComponent],
+  imports: [MoodEmojiComponent],
   templateUrl: './library.component.html',
   styleUrl: './library.component.css',
 })

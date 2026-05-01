@@ -33,7 +33,7 @@
     @for (entry of filtered; track entry.id) {
       <article class="entry-card" (click)="openEntry(entry.id)">
         <div class="entry-head">
-          <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="sm" />
+          <app-mood-emoji [primary]="moodOf(entry).primary" size="sm" />
           <div class="date-stack">
             <span class="day">{{ formatDay(entry.created_at) }}</span>
             <span class="time">{{ formatTime(entry.created_at) }}</span>

@@ -152,6 +152,22 @@ app-root {
   transform: none;
 }
 
+/* ── Background emoji scatter ── */
+.emoji-scatter {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.es {
+  position: absolute;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* ── App shell ── */
 .app {
   min-height: 100vh;
@@ -475,7 +491,49 @@ app-root {
   position: sticky;
   top: 0;
   z-index: 10;
+  overflow: visible;
   box-shadow: 0.1250rem 0 1.7500rem -0.6250rem rgba(26, 21, 18, 0.09);
+  /* border-radius: 0 0 0 1.25rem; */
+}
+
+.floral-left {
+  position: absolute;
+  bottom: -4.25rem;
+  left: -0.5rem;
+  height: 5rem;
+  width: auto;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0.75;
+}
+
+.floral-right {
+  position: absolute;
+  bottom: -2rem;
+  right: 0;
+  height: 5rem;
+  width: auto;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0.75;
+}
+
+@media (max-width: 40rem) {
+  .floral-left, .floral-right { display: none; }
+}
+
+/* Concave corner: fills the notch between sidebar and page content */
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: -1.25rem;
+  left: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: oklch(0.96 0.025 65 / 0.96);
+  border-radius: 0 0 1.25rem 0;
+  pointer-events: none;
+  z-index: 11;
 }
 
 @media (max-width: 40.0000rem) {

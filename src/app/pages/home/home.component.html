@@ -107,7 +107,7 @@
   </div>
   @if (selectedDate()) {
     <div class="date-filter-bar">
-      <span>Showing entries for {{ selectedDate() | date:'d MMM yyyy' }}</span>
+      <!-- <span>Showing entries for {{ selectedDate() | date:'d MMM yyyy' }}</span> -->
       <button class="date-filter-clear" (click)="clearDateFilter()">Clear ×</button>
     </div>
   }
@@ -118,7 +118,7 @@
       @for (entry of displayEntries; track entry.id) {
         <article class="entry-card" (click)="openEntry(entry.id)">
           <div class="entry-head">
-            <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="sm" />
+            <app-mood-emoji [primary]="moodOf(entry).primary" size="sm" />
             <div class="date-stack">
               <span class="day">{{ formatDay(entry.created_at) }}</span>
               <span class="time">{{ formatTime(entry.created_at) }}</span>
@@ -168,7 +168,7 @@
           <h3 class="otd-title">{{ entryTitle(entry) }}</h3>
           <p class="otd-preview">{{ entryPreview(entry) }}</p>
           <div class="otd-foot">
-            <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="xs" />
+            <app-mood-emoji [primary]="moodOf(entry).primary" size="xs" />
             <span>{{ moodOf(entry).label }}</span>
           </div>
         </article>

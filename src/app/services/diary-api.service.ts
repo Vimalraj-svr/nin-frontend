@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, shareReplay } from 'rxjs';
 import { DiaryEntry, EmotionFlag, EntryComment, GenerateRequest, ImageAsset } from '../models/diary.model';
 import { environment } from '../../environments/environment';
 
@@ -180,8 +180,16 @@ export class DiaryApiService {
     return this.http.get<DiaryEntry[]>(`${this.baseUrl}/on-this-day/all`);
   }
 
+  private streak$ = this.http.get<{ streak: number; total_entries: number; last_milestone: number | null; next_milestone: number | null; entries_to_next: number | null }>(
+    `${this.baseUrl}/streak`
+  ).pipe(shareReplay(1));
+
   getStreak(): Observable<{ streak: number; total_entries: number; last_milestone: number | null; next_milestone: number | null; entries_to_next: number | null }> {
-    return this.http.get<any>(`${this.baseUrl}/streak`);
+    return this.streak$;
+  }
+
+  invalidateStreak() {
+    this.streak$ = this.http.get<any>(`${this.baseUrl}/streak`).pipe(shareReplay(1));
   }
 
   getWeeklyLetter(): Observable<{ letter: string | null; entry_count: number; message?: string }> {
@@ -209,6 +217,7 @@ export class DiaryApiService {
   }
 
   checkHealth(): Observable<{ status: string; ollama: string; model: string; memory_entries: number }> {
-    return this.http.get<any>('http://localhost:9000/health');
+    const base = environment.apiUrl.replace(/\/api$/, '');
+    return this.http.get<any>(`${base}/health`);
   }
 }

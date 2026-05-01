@@ -4,7 +4,6 @@ import { AsyncPipe } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
 import { DiaryApiService } from './services/diary-api.service';
-import { OrbComponent } from './components/orb/orb.component';
 import { NotifBellComponent } from './components/notif-bell/notif-bell.component';
 
 interface NavItem { id: string; label: string; sub: string; route: string; k: string; icon: string; }
@@ -24,12 +23,26 @@ const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/res
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe, OrbComponent, NotifBellComponent],
+  imports: [RouterOutlet, AsyncPipe, NotifBellComponent],
   template: `
     @if (isAuthPage()) {
       <!-- Auth pages: full-screen, no sidebar -->
       <router-outlet />
     } @else {
+      <div class="emoji-scatter" aria-hidden="true">
+        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:6%;left:3%;width:2rem;opacity:0.07;transform:rotate(-14deg)" />
+        <img src="/assets/svgs/emojis/heart.svg"            class="es" style="top:13%;right:5%;width:2.5rem;opacity:0.06;transform:rotate(18deg)" />
+        <img src="/assets/svgs/emojis/flower.svg"           class="es" style="top:30%;left:1.5%;width:2.75rem;opacity:0.055;transform:rotate(-7deg)" />
+        <img src="/assets/svgs/emojis/happy-smile-1.svg"   class="es" style="top:46%;right:2.5%;width:2.25rem;opacity:0.05;transform:rotate(22deg)" />
+        <img src="/assets/svgs/emojis/moon.svg"             class="es" style="top:61%;left:4%;width:2rem;opacity:0.065;transform:rotate(-20deg)" />
+        <img src="/assets/svgs/emojis/star-eyes.svg"        class="es" style="top:75%;right:6%;width:2.5rem;opacity:0.055;transform:rotate(10deg)" />
+        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:87%;left:10%;width:1.75rem;opacity:0.06;transform:rotate(28deg)" />
+        <img src="/assets/svgs/emojis/happy-smile-wink.svg" class="es" style="top:22%;right:22%;width:2.25rem;opacity:0.04;transform:rotate(-6deg)" />
+        <img src="/assets/svgs/emojis/flower.svg"           class="es" style="top:53%;left:18%;width:1.875rem;opacity:0.04;transform:rotate(16deg)" />
+        <img src="/assets/svgs/emojis/heart.svg"            class="es" style="top:91%;right:16%;width:1.875rem;opacity:0.05;transform:rotate(-12deg)" />
+        <img src="/assets/svgs/emojis/sun.svg"              class="es" style="top:38%;right:14%;width:2rem;opacity:0.04;transform:rotate(8deg)" />
+        <img src="/assets/svgs/emojis/music.svg"            class="es" style="top:70%;left:28%;width:1.75rem;opacity:0.04;transform:rotate(-22deg)" />
+      </div>
       <div class="app">
         <aside class="sidebar">
           <div class="brand" (click)="nav('/')">
@@ -79,12 +92,14 @@ const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/res
 
         <div class="main">
           <div class="topbar">
+            <img class="floral-left" src="/assets/svgs/floral-corner-left.svg" alt="" aria-hidden="true" />
             <div class="crumb">{{ crumb() }}</div>
             <div style="display:flex;align-items:center;gap:0.75rem">
               <app-notif-bell />
-              <app-orb [hue]="dayOrb.hue" [warmth]="dayOrb.warmth" size="xs" [breathing]="true" />
+              <div style="width:0.0625rem;height:1rem;background:black;flex-shrink:0"></div>
               <div class="date">{{ today }}</div>
             </div>
+            <!-- <img class="floral-right" src="/assets/svgs/floral-corner-left.svg" alt="" aria-hidden="true" /> -->
           </div>
           <router-outlet />
         </div>
@@ -160,19 +175,6 @@ export class AppComponent implements OnInit {
   }
 
   nav(route: string) { this.router.navigate([route]); }
-
-  // Sun=0 Mon=1 Tue=2 Wed=3 Thu=4 Fri=5 Sat=6
-  private static readonly DAY_ORBS = [
-    { hue: 190, warmth: 0.52 }, // Sunday
-    { hue: 56,  warmth: 0.72 }, // Monday
-    { hue: 28,  warmth: 0.78 }, // Tuesday
-    { hue: 130, warmth: 0.58 }, // Wednesday
-    { hue: 280, warmth: 0.52 }, // Thursday
-    { hue: 42,  warmth: 0.82 }, // Friday
-    { hue: 340, warmth: 0.62 }, // Saturday
-  ];
-
-  get dayOrb() { return AppComponent.DAY_ORBS[new Date().getDay()]; }
 
   @HostListener('window:keydown', ['$event'])
   onKey(e: KeyboardEvent) {

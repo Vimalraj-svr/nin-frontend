@@ -12,63 +12,62 @@
   }
 
   @if (!loading() && profile()) {
-    <!-- Hero -->
-    <div class="profile-hero">
-      <div class="hero-avatar" [style]="avatarStyle()">{{ initials(profile()!.name) }}</div>
-      <h1 class="hero-name">{{ profile()!.name }}</h1>
-    </div>
 
-    <!-- Stats -->
-    <div class="profile-stats">
-      <div class="pstat">
-        <span class="pstat-n">{{ profile()!.follower_count ?? 0 }}</span>
-        <span class="pstat-l">followers</span>
-      </div>
-      <div class="pstat-sep"></div>
-      <div class="pstat">
-        <span class="pstat-n">{{ profile()!.following_count ?? 0 }}</span>
-        <span class="pstat-l">following</span>
-      </div>
-      @if ((profile()!.streak ?? 0) > 0) {
-        <div class="pstat-sep"></div>
-        <div class="pstat pstat--streak">
-          <span class="pstat-n">{{ profile()!.streak }}</span>
-          <span class="pstat-l">day streak</span>
+    <!-- Immersive header card -->
+    <div class="prof-header" [style.--vh]="profile()!.vibe_hue ?? 56">
+      <div class="prof-banner"></div>
+      <div class="prof-avi" [style]="avatarStyle()">{{ initials(profile()!.name) }}</div>
+      <div class="prof-identity">
+        <h1 class="prof-name">{{ profile()!.name }}</h1>
+
+        <div class="prof-stats">
+          <div class="ps">
+            <span class="ps-n">{{ profile()!.follower_count ?? 0 }}</span>
+            <span class="ps-l">followers</span>
+          </div>
+          <div class="ps-dot"></div>
+          <div class="ps">
+            <span class="ps-n">{{ profile()!.following_count ?? 0 }}</span>
+            <span class="ps-l">following</span>
+          </div>
+          @if ((profile()!.streak ?? 0) > 0) {
+            <div class="ps-dot"></div>
+            <div class="ps ps--streak">
+              <span class="ps-n">{{ profile()!.streak }}</span>
+              <span class="ps-l">streak</span>
+            </div>
+          }
+          @if ((profile()!.entry_count ?? 0) > 0) {
+            <div class="ps-dot"></div>
+            <div class="ps">
+              <span class="ps-n">{{ profile()!.entry_count }}</span>
+              <span class="ps-l">memories</span>
+            </div>
+          }
         </div>
-      }
-      @if ((profile()!.entry_count ?? 0) > 0) {
-        <div class="pstat-sep"></div>
-        <div class="pstat">
-          <span class="pstat-n">{{ profile()!.entry_count }}</span>
-          <span class="pstat-l">memories</span>
+
+        <div class="prof-actions">
+          @if (!profile()!.is_restricted) {
+            @if (profile()!.is_following) {
+              <button class="pact pact--ghost" (click)="unfollow()" [disabled]="!!pendingAction()">
+                {{ pendingAction() === 'unfollow' ? '…' : 'Following' }}
+              </button>
+            } @else {
+              <button class="pact pact--primary" (click)="follow()" [disabled]="!!pendingAction()">
+                {{ pendingAction() === 'follow' ? '…' : 'Follow' }}
+              </button>
+            }
+            <button class="pact pact--mute" (click)="restrict()" [disabled]="!!pendingAction()">
+              {{ pendingAction() === 'restrict' ? '…' : 'Restrict' }}
+            </button>
+          } @else {
+            <button class="pact pact--ghost" (click)="unrestrict()" [disabled]="!!pendingAction()">
+              {{ pendingAction() === 'unrestrict' ? '…' : 'Unrestrict' }}
+            </button>
+          }
         </div>
-      }
+      </div>
     </div>
-
-    <!-- Actions -->
-    <div class="profile-actions">
-      @if (!profile()!.is_restricted) {
-        @if (profile()!.is_following) {
-          <button class="btn-pill btn-pill--ghost" (click)="unfollow()" [disabled]="!!pendingAction()">
-            {{ pendingAction() === 'unfollow' ? '…' : 'Following' }}
-          </button>
-        } @else {
-          <button class="btn-pill btn-pill--gold" (click)="follow()" [disabled]="!!pendingAction()">
-            {{ pendingAction() === 'follow' ? '…' : 'Follow' }}
-          </button>
-        }
-        <button class="btn-pill btn-pill--mute" (click)="restrict()" [disabled]="!!pendingAction()">
-          {{ pendingAction() === 'restrict' ? '…' : 'Restrict' }}
-        </button>
-      } @else {
-        <button class="btn-pill btn-pill--ghost" (click)="unrestrict()" [disabled]="!!pendingAction()">
-          {{ pendingAction() === 'unrestrict' ? '…' : 'Unrestrict' }}
-        </button>
-      }
-    </div>
-
-    <!-- Divider -->
-    <div class="section-divider"></div>
 
     <!-- Vibe Check Section -->
     <div class="vibe-section">
@@ -79,7 +78,7 @@
         </div>
         @if (!vibeResult()) {
           <span class="vibe-remaining" [class.vibe-remaining--low]="vibeRemaining() <= 1">
-            {{ vibeRemaining() }} check{{ vibeRemaining() !== 1 ? 's' : '' }} remaining
+            {{ vibeRemaining() }} left
           </span>
         }
       </div>
@@ -101,9 +100,7 @@
           <p class="vibe-error">{{ vibeError() }}</p>
         }
       } @else {
-        <!-- Result -->
         <div class="vibe-result">
-          <!-- Orbs + score ring -->
           <div class="vibe-orbs-row">
             <div class="vibe-side">
               <app-orb [hue]="vibeResult()!.my_vibe_hue" [warmth]="0.72" size="sm" [breathing]="true" />
@@ -127,7 +124,6 @@
               </div>
             </div>
           </div>
-
           <div class="vibe-label">{{ vibeResult()!.label }}</div>
           <p class="vibe-description">{{ vibeResult()!.description }}</p>
         </div>
@@ -137,7 +133,6 @@
 
   <!-- Shared memories -->
   @if (sharedEntries().length > 0) {
-    <div class="section-divider"></div>
     <div class="shared-section">
       <div class="shared-head">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -151,10 +146,8 @@
       <div class="shared-list">
         @for (entry of sharedEntries(); track entry.id) {
           <div class="shared-row" (click)="openEntry(entry.id)">
-            <div class="shared-row-body">
-              <div class="shared-row-title">{{ entryTitle(entry) }}</div>
-              <p class="shared-row-preview">{{ entryPreview(entry) }}</p>
-            </div>
+            <div class="shared-row-title">{{ entryTitle(entry) }}</div>
+            <p class="shared-row-preview">{{ entryPreview(entry) }}</p>
             <div class="shared-row-meta">
               <span>{{ entryDate(entry.created_at) }}</span>
               @if (entryLang(entry)) { <span class="meta-sep">·</span> <span>{{ entryLang(entry) }}</span> }
