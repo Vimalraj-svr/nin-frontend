@@ -1,0 +1,204 @@
+<div class="people-wrap fade-in">
+
+  <div class="people-head">
+    <h1>Kin</h1>
+    <p class="lede">Follow people, share memories, keep each other's company.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="people-tabs">
+    <button class="tab-btn" [class.active]="tab() === 'discover'" (click)="setTab('discover')">Discover</button>
+    <button class="tab-btn" [class.active]="tab() === 'following'" (click)="setTab('following')">
+      Following
+      @if (following().length > 0) { <span class="tab-count">{{ following().length }}</span> }
+    </button>
+    <button class="tab-btn" [class.active]="tab() === 'followers'" (click)="setTab('followers')">
+      Followers
+      @if (followers().length > 0) { <span class="tab-count">{{ followers().length }}</span> }
+    </button>
+    <button class="tab-btn" [class.active]="tab() === 'restricted'" (click)="setTab('restricted')">Restricted</button>
+  </div>
+
+  <!-- DISCOVER TAB -->
+  @if (tab() === 'discover') {
+    <div class="discover-pane">
+      <div class="search-box">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Search by name or paste email…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchInput()"
+          autocomplete="off"
+        />
+        @if (searching) { <span class="search-spinner"></span> }
+      </div>
+
+      <!-- Email / invite mode -->
+      @if (isEmailQuery) {
+        <div class="invite-pane">
+          <div class="invite-icon">✉</div>
+          @if (!inviteResult()) {
+            <p class="invite-desc">Check if <strong>{{ searchQuery.trim() }}</strong> is on Ninaivugal or send them an invite.</p>
+            <button class="btn-pill btn-pill--gold" (click)="checkInvite()" [disabled]="inviteSending">
+              {{ inviteSending ? 'Checking…' : 'Check & Invite' }}
+            </button>
+          } @else if (inviteResult()!.status === 'already_registered') {
+            <p class="invite-found">Already on Ninaivugal as <strong>{{ inviteResult()!.name }}</strong>. Search by name to find them.</p>
+          } @else if (inviteResult()!.status === 'invited') {
+            <p class="invite-sent">Invite sent to <strong>{{ searchQuery.trim() }}</strong>. They'll get an email.</p>
+          } @else if (inviteResult()!.status === 'already_invited') {
+            <p class="invite-sent">They've already been invited. Keep an eye out!</p>
+          }
+        </div>
+      }
+
+      <!-- Name search results -->
+      @if (!isEmailQuery && searchQuery && searchDone && searchResults().length === 0) {
+        <div class="empty-hint">
+          <div class="empty-glyph">◎</div>
+          <p>No one found for "{{ searchQuery }}". Try their email to invite them.</p>
+        </div>
+      }
+
+      @if (!isEmailQuery && searchResults().length > 0) {
+        <div class="profile-list">
+          @for (p of searchResults(); track p.id) {
+            <div class="profile-row" (click)="openProfile(p.id)">
+              <div class="profile-avatar">{{ initials(p.name) }}</div>
+              <div class="profile-info">
+                <div class="profile-name">{{ p.name }}</div>
+              </div>
+              <div class="profile-actions" (click)="$event.stopPropagation()">
+                @if (!p.is_restricted) {
+                  @if (p.is_following) {
+                    <button class="btn-pill btn-pill--ghost" (click)="unfollow(p)" [disabled]="pendingId() === p.id">
+                      {{ pendingId() === p.id ? '…' : 'Following' }}
+                    </button>
+                  } @else {
+                    <button class="btn-pill btn-pill--gold" (click)="follow(p)" [disabled]="pendingId() === p.id">
+                      {{ pendingId() === p.id ? '…' : 'Follow' }}
+                    </button>
+                  }
+                  <button class="btn-pill btn-pill--mute" (click)="restrict(p)" [disabled]="pendingId() === p.id">Restrict</button>
+                } @else {
+                  <button class="btn-pill btn-pill--mute" (click)="unrestrict(p)" [disabled]="pendingId() === p.id">
+                    {{ pendingId() === p.id ? '…' : 'Unrestrict' }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (!searchQuery) {
+        <div class="discover-hint">
+          <div class="discover-glyph">◈</div>
+          <p>Search by name to follow, or paste an email to invite someone new.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- FOLLOWING TAB -->
+  @if (tab() === 'following') {
+    <div class="list-pane">
+      @if (following().length === 0 && !loadingList()) {
+        <div class="empty-hint">
+          <div class="empty-glyph">◈</div>
+          <p>You're not following anyone yet. Search in Discover to find people.</p>
+        </div>
+      }
+      @if (following().length > 0) {
+        <div class="profile-list">
+          @for (p of following(); track p.id) {
+            <div class="profile-row" (click)="openProfile(p.id)">
+              <div class="profile-avatar">{{ initials(p.name) }}</div>
+              <div class="profile-info">
+                <div class="profile-name">{{ p.name }}</div>
+              </div>
+              <div class="profile-actions" (click)="$event.stopPropagation()">
+                <button class="btn-pill btn-pill--ghost" (click)="unfollow(p)" [disabled]="pendingId() === p.id">
+                  {{ pendingId() === p.id ? '…' : 'Unfollow' }}
+                </button>
+                <button class="btn-pill btn-pill--mute" (click)="restrict(p)" [disabled]="pendingId() === p.id">Restrict</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- FOLLOWERS TAB -->
+  @if (tab() === 'followers') {
+    <div class="list-pane">
+      @if (followers().length === 0 && !loadingList()) {
+        <div class="empty-hint">
+          <div class="empty-glyph">◎</div>
+          <p>No followers yet. Your writing will find its people.</p>
+        </div>
+      }
+      @if (followers().length > 0) {
+        <div class="profile-list">
+          @for (p of followers(); track p.id) {
+            <div class="profile-row" (click)="openProfile(p.id)">
+              <div class="profile-avatar">{{ initials(p.name) }}</div>
+              <div class="profile-info">
+                <div class="profile-name">{{ p.name }}</div>
+                @if (p.is_following) { <span class="mutual-badge">Mutual</span> }
+              </div>
+              <div class="profile-actions" (click)="$event.stopPropagation()">
+                @if (!p.is_following) {
+                  <button class="btn-pill btn-pill--gold" (click)="follow(p)" [disabled]="pendingId() === p.id">
+                    {{ pendingId() === p.id ? '…' : 'Follow back' }}
+                  </button>
+                } @else {
+                  <button class="btn-pill btn-pill--ghost" (click)="unfollow(p)" [disabled]="pendingId() === p.id">
+                    {{ pendingId() === p.id ? '…' : 'Following' }}
+                  </button>
+                }
+                <button class="btn-pill btn-pill--mute" (click)="restrict(p)" [disabled]="pendingId() === p.id">Restrict</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- RESTRICTED TAB -->
+  @if (tab() === 'restricted') {
+    <div class="list-pane">
+      @if (restricted().length === 0 && !loadingList()) {
+        <div class="empty-hint">
+          <div class="empty-glyph">✦</div>
+          <p>No one restricted. Restriction hides you from each other completely.</p>
+        </div>
+      }
+      @if (restricted().length > 0) {
+        <div class="profile-list">
+          @for (p of restricted(); track p.id) {
+            <div class="profile-row">
+              <div class="profile-avatar restricted-avatar">{{ initials(p.name) }}</div>
+              <div class="profile-info">
+                <div class="profile-name">{{ p.name }}</div>
+                <span class="restricted-label">Restricted</span>
+              </div>
+              <div class="profile-actions">
+                <button class="btn-pill btn-pill--ghost" (click)="unrestrict(p)" [disabled]="pendingId() === p.id">
+                  {{ pendingId() === p.id ? '…' : 'Unrestrict' }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</div>

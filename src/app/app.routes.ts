@@ -46,6 +46,18 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/history/history.component').then(m => m.HistoryComponent),
   },
+  {
+    path: 'people',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/people/people.component').then(m => m.PeopleComponent),
+  },
+  {
+    path: 'people/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/people/profile/profile.component').then(m => m.ProfileComponent),
+  },
   { path: 'history', redirectTo: '/pages', pathMatch: 'full' },
   { path: 'library', redirectTo: '/pages', pathMatch: 'full' },
   {

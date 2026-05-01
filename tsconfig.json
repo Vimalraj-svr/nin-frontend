@@ -9,6 +9,11 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
+    "paths": {
+      "firebase/app": ["./node_modules/firebase/app/dist/app"],
+      "firebase/firestore": ["./node_modules/firebase/firestore/dist/firestore"],
+      "firebase/auth": ["./node_modules/firebase/auth/dist/auth"]
+    },
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,

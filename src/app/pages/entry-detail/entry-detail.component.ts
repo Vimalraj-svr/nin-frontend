@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { OrbComponent } from '../../components/orb/orb.component';
+import { ShareWithModalComponent } from '../../components/share-with-modal/share-with-modal.component';
 import { DiaryApiService, SAMPLE_ENTRIES, SampleEntry, moodFromSummary, MoodInfo } from '../../services/diary-api.service';
 import { DiaryEntry, EmotionFlag, EMOTION_FLAGS, EntryComment, ImageAsset } from '../../models/diary.model';
 import { EMOJI_CATEGORIES, EmojiCategory, ALL_EMOJIS } from '../../data/emojis';
@@ -21,7 +22,7 @@ export const EMOTION_FLAG_MAP = new Map(EMOTION_FLAGS.map(f => [f.value, f]));
 @Component({
   selector: 'app-entry-detail',
   standalone: true,
-  imports: [OrbComponent, FormsModule],
+  imports: [OrbComponent, FormsModule, ShareWithModalComponent],
   templateUrl: './entry-detail.component.html',
   styleUrl: './entry-detail.component.css',
 })
@@ -61,6 +62,10 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
   deleteConfirm = false;
   shareLink = '';
   shareCopied = false;
+
+  showShareModal = false;
+  sharedWith = signal<string[]>([]);
+  viewerIsOwner = signal(true);
 
   readonly emotionFlags = EMOTION_FLAGS;
   readonly emojiCategories = EMOJI_CATEGORIES;
@@ -105,6 +110,8 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
           this.comments.set(e.comments ?? []);
           this.emotionFlag.set(e.emotion_flag ?? null);
           this.isHidden.set(e.is_hidden ?? false);
+          this.sharedWith.set(e.shared_with ?? []);
+          this.viewerIsOwner.set(e.viewer_is_owner ?? true);
           this.editText = e.content_edit ?? e.content_original ?? e.content_english ?? '';
           this.editTitle = e.title_edit ?? e.title_original ?? e.title_english ?? '';
           this.loading = false;
@@ -330,7 +337,16 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   }
 
-  // ── share / delete ───────────────────────────────────────────────────────────
+  // ── share-with people ────────────────────────────────────────────────────────
+
+  openShareModal() { this.showShareModal = true; }
+
+  onShareModalClose(updatedIds: string[]) {
+    this.sharedWith.set(updatedIds);
+    this.showShareModal = false;
+  }
+
+  // ── share link / delete ──────────────────────────────────────────────────────
 
   shareEntry() {
     const e = this.apiEntry();

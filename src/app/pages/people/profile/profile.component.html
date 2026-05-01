@@ -1,0 +1,168 @@
+<div class="profile-page fade-in">
+
+  <button class="back-btn" (click)="goBack()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Kin
+  </button>
+
+  @if (loading()) {
+    <div class="profile-loading">
+      <span class="prof-spinner"></span>
+    </div>
+  }
+
+  @if (!loading() && profile()) {
+    <!-- Hero -->
+    <div class="profile-hero">
+      <div class="hero-avatar" [style]="avatarStyle()">{{ initials(profile()!.name) }}</div>
+      <h1 class="hero-name">{{ profile()!.name }}</h1>
+    </div>
+
+    <!-- Stats -->
+    <div class="profile-stats">
+      <div class="pstat">
+        <span class="pstat-n">{{ profile()!.follower_count ?? 0 }}</span>
+        <span class="pstat-l">followers</span>
+      </div>
+      <div class="pstat-sep"></div>
+      <div class="pstat">
+        <span class="pstat-n">{{ profile()!.following_count ?? 0 }}</span>
+        <span class="pstat-l">following</span>
+      </div>
+      @if ((profile()!.streak ?? 0) > 0) {
+        <div class="pstat-sep"></div>
+        <div class="pstat pstat--streak">
+          <span class="pstat-n">{{ profile()!.streak }}</span>
+          <span class="pstat-l">day streak</span>
+        </div>
+      }
+      @if ((profile()!.entry_count ?? 0) > 0) {
+        <div class="pstat-sep"></div>
+        <div class="pstat">
+          <span class="pstat-n">{{ profile()!.entry_count }}</span>
+          <span class="pstat-l">memories</span>
+        </div>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="profile-actions">
+      @if (!profile()!.is_restricted) {
+        @if (profile()!.is_following) {
+          <button class="btn-pill btn-pill--ghost" (click)="unfollow()" [disabled]="!!pendingAction()">
+            {{ pendingAction() === 'unfollow' ? '…' : 'Following' }}
+          </button>
+        } @else {
+          <button class="btn-pill btn-pill--gold" (click)="follow()" [disabled]="!!pendingAction()">
+            {{ pendingAction() === 'follow' ? '…' : 'Follow' }}
+          </button>
+        }
+        <button class="btn-pill btn-pill--mute" (click)="restrict()" [disabled]="!!pendingAction()">
+          {{ pendingAction() === 'restrict' ? '…' : 'Restrict' }}
+        </button>
+      } @else {
+        <button class="btn-pill btn-pill--ghost" (click)="unrestrict()" [disabled]="!!pendingAction()">
+          {{ pendingAction() === 'unrestrict' ? '…' : 'Unrestrict' }}
+        </button>
+      }
+    </div>
+
+    <!-- Divider -->
+    <div class="section-divider"></div>
+
+    <!-- Vibe Check Section -->
+    <div class="vibe-section">
+      <div class="vibe-section-head">
+        <div class="vibe-title-row">
+          <span class="vibe-glyph">◈</span>
+          <span class="vibe-title">Vibe Check</span>
+        </div>
+        @if (!vibeResult()) {
+          <span class="vibe-remaining" [class.vibe-remaining--low]="vibeRemaining() <= 1">
+            {{ vibeRemaining() }} check{{ vibeRemaining() !== 1 ? 's' : '' }} remaining
+          </span>
+        }
+      </div>
+
+      @if (!vibeResult()) {
+        <p class="vibe-desc">
+          Discover your emotional compatibility. Both of you need at least 5 memories to unlock this.
+        </p>
+        <button
+          class="btn-vibe"
+          (click)="runVibeCheck()"
+          [disabled]="vibeLoading() || vibeRemaining() === 0"
+        >
+          @if (vibeLoading()) { Checking… }
+          @else if (vibeRemaining() === 0) { No checks remaining }
+          @else { Check our vibe }
+        </button>
+        @if (vibeError()) {
+          <p class="vibe-error">{{ vibeError() }}</p>
+        }
+      } @else {
+        <!-- Result -->
+        <div class="vibe-result">
+          <!-- Orbs + score ring -->
+          <div class="vibe-orbs-row">
+            <div class="vibe-side">
+              <app-orb [hue]="vibeResult()!.my_vibe_hue" [warmth]="0.72" size="sm" [breathing]="true" />
+              <div class="vibe-traits">
+                @for (t of vibeResult()!.traits_a; track t) {
+                  <span class="trait-chip" [style.--th]="vibeResult()!.my_vibe_hue">{{ t }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="vibe-score-ring" [style.--score]="vibeResult()!.score" [style.--h]="vibeResult()!.their_vibe_hue">
+              <span class="vibe-score-num">{{ vibeResult()!.score }}</span>
+            </div>
+
+            <div class="vibe-side">
+              <app-orb [hue]="vibeResult()!.their_vibe_hue" [warmth]="0.72" size="sm" [breathing]="true" />
+              <div class="vibe-traits">
+                @for (t of vibeResult()!.traits_b; track t) {
+                  <span class="trait-chip" [style.--th]="vibeResult()!.their_vibe_hue">{{ t }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="vibe-label">{{ vibeResult()!.label }}</div>
+          <p class="vibe-description">{{ vibeResult()!.description }}</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Shared memories -->
+  @if (sharedEntries().length > 0) {
+    <div class="section-divider"></div>
+    <div class="shared-section">
+      <div class="shared-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        <span>Shared with you</span>
+        <span class="shared-count">{{ sharedEntries().length }}</span>
+      </div>
+      <div class="shared-list">
+        @for (entry of sharedEntries(); track entry.id) {
+          <div class="shared-row" (click)="openEntry(entry.id)">
+            <div class="shared-row-body">
+              <div class="shared-row-title">{{ entryTitle(entry) }}</div>
+              <p class="shared-row-preview">{{ entryPreview(entry) }}</p>
+            </div>
+            <div class="shared-row-meta">
+              <span>{{ entryDate(entry.created_at) }}</span>
+              @if (entryLang(entry)) { <span class="meta-sep">·</span> <span>{{ entryLang(entry) }}</span> }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

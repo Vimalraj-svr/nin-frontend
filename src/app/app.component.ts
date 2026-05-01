@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
 import { DiaryApiService } from './services/diary-api.service';
 import { OrbComponent } from './components/orb/orb.component';
+import { NotifBellComponent } from './components/notif-bell/notif-bell.component';
 
 interface NavItem { id: string; label: string; sub: string; route: string; k: string; icon: string; }
 
@@ -12,6 +13,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'home',     label: 'Today',   sub: 'this moment',       route: '/',        k: 'H', icon: '◎' },
   { id: 'compose',  label: 'Pour',    sub: 'new entry',         route: '/compose', k: 'W', icon: '✍' },
   { id: 'pages',    label: 'Pages',   sub: 'your full story',   route: '/pages',   k: 'J', icon: '◷' },
+  { id: 'people',   label: 'Kin',     sub: 'follow & share',    route: '/people',  k: 'K', icon: '◐' },
   { id: 'reflect',  label: 'Weave',   sub: 'threads & letters', route: '/reflect', k: 'R', icon: '◈' },
   { id: 'chat',     label: 'Commune', sub: 'ask your diary',    route: '/chat',    k: 'C', icon: '◉' },
   { id: 'settings', label: 'Sanctum', sub: 'your space',        route: '/settings',k: 'S', icon: '⚙' },
@@ -22,7 +24,7 @@ const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/res
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe, OrbComponent],
+  imports: [RouterOutlet, AsyncPipe, OrbComponent, NotifBellComponent],
   template: `
     @if (isAuthPage()) {
       <!-- Auth pages: full-screen, no sidebar -->
@@ -78,7 +80,8 @@ const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/res
         <div class="main">
           <div class="topbar">
             <div class="crumb">{{ crumb() }}</div>
-            <div style="display:flex;align-items:center;gap:0.625rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+              <app-notif-bell />
               <app-orb [hue]="dayOrb.hue" [warmth]="dayOrb.warmth" size="xs" [breathing]="true" />
               <div class="date">{{ today }}</div>
             </div>
@@ -139,6 +142,7 @@ export class AppComponent implements OnInit {
       else if (url.startsWith('/pages'))      this.activeRoute.set('pages');
       else if (url.startsWith('/history'))    this.activeRoute.set('pages');
       else if (url.startsWith('/library'))    this.activeRoute.set('pages');
+      else if (url.startsWith('/people'))     this.activeRoute.set('people');
       else if (url.startsWith('/reflect'))    this.activeRoute.set('reflect');
       else if (url.startsWith('/chat'))       this.activeRoute.set('chat');
       else if (url.startsWith('/settings'))   this.activeRoute.set('settings');
@@ -149,7 +153,7 @@ export class AppComponent implements OnInit {
 
   crumb(): string {
     const map: Record<string, string> = {
-      home: 'Today', compose: 'Pour', pages: 'Pages',
+      home: 'Today', compose: 'Pour', pages: 'Pages', people: 'Kin',
       reflect: 'Weave', chat: 'Commune', settings: 'Sanctum',
     };
     return map[this.activeRoute()] ?? '';
@@ -178,6 +182,7 @@ export class AppComponent implements OnInit {
     if (e.key === 'h' || e.key === 'H') this.nav('/');
     if (e.key === 'w' || e.key === 'W') this.nav('/compose');
     if (e.key === 'j' || e.key === 'J') this.nav('/pages');
+    if (e.key === 'k' || e.key === 'K') this.nav('/people');
     if (e.key === 'r' || e.key === 'R') this.nav('/reflect');
     if (e.key === 'c' || e.key === 'C') this.nav('/chat');
     if (e.key === 's' || e.key === 'S') this.nav('/settings');

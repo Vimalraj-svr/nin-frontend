@@ -45,6 +45,22 @@ export interface DiaryEntry {
   comments: EntryComment[];
   is_hidden: boolean;
   emotion_flag: EmotionFlag | null;
+  shared_with: string[];
+  viewer_is_owner: boolean;
+  // only present on shared-with-me responses
+  shared_by_name?: string;
+}
+
+export interface SocialProfile {
+  id: string;
+  name: string;
+  is_following: boolean;
+  is_restricted: boolean;
+  follower_count?: number;
+  following_count?: number;
+  streak?: number;
+  entry_count?: number;
+  vibe_hue?: number;
 }
 
 export const EMOTION_FLAGS: { value: EmotionFlag; label: string; emoji: string; color: string }[] = [

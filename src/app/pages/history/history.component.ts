@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DiaryApiService, moodFromSummary } from '../../services/diary-api.service';
+import { SocialApiService } from '../../services/social-api.service';
 import { DiaryEntry, LANGUAGE_DISPLAY, EMOTION_FLAGS } from '../../models/diary.model';
 import { OrbComponent } from '../../components/orb/orb.component';
 
@@ -30,15 +31,33 @@ export class HistoryComponent implements OnInit {
   viewMode = signal<'timeline' | 'grid'>('timeline');
   searchQuery = '';
 
-  constructor(private api: DiaryApiService, private router: Router) {}
+  sharedWithMe = signal<(DiaryEntry & { shared_by_name: string })[]>([]);
+  sharedLoading = true;
 
-  ngOnInit() { this.load(); }
+  constructor(
+    private api: DiaryApiService,
+    private social: SocialApiService,
+    private router: Router,
+  ) {}
+
+  ngOnInit() {
+    this.load();
+    this.loadShared();
+  }
 
   load() {
     this.loading = true;
     this.api.getEntries(0, 100).subscribe({
       next: data => { this.entries = data; this.loading = false; },
       error: () => { this.error = 'Failed to load entries.'; this.loading = false; },
+    });
+  }
+
+  loadShared() {
+    this.sharedLoading = true;
+    this.social.getSharedWithMe().subscribe({
+      next: data => { this.sharedWithMe.set(data); this.sharedLoading = false; },
+      error: () => { this.sharedLoading = false; },
     });
   }
 
@@ -76,7 +95,10 @@ export class HistoryComponent implements OnInit {
     const clean = t.replace(/\n+/g, ' ').trim();
     return clean.length > 200 ? clean.slice(0, 200) + '…' : clean;
   }
-  entryLang(e: DiaryEntry) { return LANGUAGE_DISPLAY[e.detected_language ?? '']?.label ?? 'Unknown'; }
+  entryLang(e: DiaryEntry) {
+    const key = e.detected_language ?? e.preferred_language ?? '';
+    return LANGUAGE_DISPLAY[key]?.label ?? '';
+  }
   moodOf(e: DiaryEntry) { return moodFromSummary(e.mood_summary); }
   emotionOf(e: DiaryEntry) { return e.emotion_flag ? EMOTION_FLAG_MAP.get(e.emotion_flag) ?? null : null; }
 

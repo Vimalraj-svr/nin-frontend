@@ -1,0 +1,86 @@
+<div class="swm-backdrop" (click)="dismiss()"></div>
+<div class="swm-panel">
+  <div class="swm-header">
+    <div class="swm-title">Share this memory</div>
+    <button class="swm-close" (click)="dismiss()">✕</button>
+  </div>
+
+  <!-- Currently shared with -->
+  @if (currentShared().length > 0) {
+    <div class="swm-section">
+      <div class="swm-section-label">Shared with</div>
+      <div class="swm-chips">
+        @for (s of currentShared(); track s.id) {
+          <div class="swm-chip">
+            <span class="swm-chip-avatar">{{ initials(s.name) }}</span>
+            <span class="swm-chip-name">{{ s.name }}</span>
+            <button class="swm-chip-remove" (click)="removeUser(s)" [disabled]="pendingId() === s.id" title="Remove">
+              {{ pendingId() === s.id ? '…' : '✕' }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Search -->
+  <div class="swm-section">
+    <div class="swm-section-label">Add someone</div>
+    <div class="search-box">
+      <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search by name…"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchInput()"
+        autocomplete="off"
+      />
+      @if (searching) {
+        <span class="search-spinner"></span>
+      }
+    </div>
+
+    @if (error) {
+      <div class="swm-error">{{ error }}</div>
+    }
+
+    @if (searchQuery && searchDone && searchResults().length === 0) {
+      <div class="swm-empty">No one found for "{{ searchQuery }}"</div>
+    }
+
+    @if (searchResults().length > 0) {
+      <div class="swm-results">
+        @for (p of searchResults(); track p.id) {
+          <div class="swm-result-row">
+            <div class="swm-result-avatar">{{ initials(p.name) }}</div>
+            <div class="swm-result-name">{{ p.name }}</div>
+            @if (isShared(p.id)) {
+              <span class="swm-added-badge">Added</span>
+            } @else {
+              <button
+                class="swm-add-btn"
+                (click)="addUser(p)"
+                [disabled]="pendingId() === p.id"
+              >
+                {{ pendingId() === p.id ? '…' : 'Add' }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (currentShared().length === 0 && !searchQuery) {
+    <div class="swm-hint">
+      Search for someone to share this memory with them.
+    </div>
+  }
+
+  <div class="swm-footer">
+    <button class="swm-done-btn" (click)="dismiss()">Done</button>
+  </div>
+</div>

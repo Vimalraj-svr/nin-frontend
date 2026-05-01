@@ -13,6 +13,7 @@ export class OrbComponent {
 
   get sizeClass(): string {
     const s = this.size !== 'md' ? this.size : '';
-    return [s, this.breathing ? 'breathing' : ''].filter(Boolean).join(' ');
+    const p = `p-${Math.abs(Math.round(this.hue * 7)) % 5}`;
+    return [s, this.breathing ? 'breathing' : '', p].filter(Boolean).join(' ');
   }
 }
