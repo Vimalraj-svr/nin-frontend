@@ -57,6 +57,16 @@ function dayLabel(isoDate: string): { label: string; sub: string } {
   return { label: '2 days ago', sub: dateStr };
 }
 
+const fileToBase64 = (file: Blob): Promise<string> => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+        const base64String = (reader.result as string).split(',')[1];
+        resolve(base64String);
+    };
+    reader.onerror = error => reject(error);
+});
+
 @Component({
   selector: 'app-compose',
   standalone: true,
@@ -76,7 +86,8 @@ export class ComposeComponent implements OnInit, OnDestroy {
   error = '';
 
   availableDays = signal<AvailableDay[]>([]);
-  selectedDate = signal<string>('');       // ISO date the entry is for
+  selectedDate = signal<string>('');
+  datesLoaded = signal(false);
 
   isRecording = false;
   mediaRecorder: MediaRecorder | null = null;
@@ -114,11 +125,13 @@ export class ComposeComponent implements OnInit, OnDestroy {
         const days = dates.map(d => ({ isoDate: d, ...dayLabel(d) }));
         this.availableDays.set(days);
         if (days.length > 0) this.selectedDate.set(days[0].isoDate);
+        this.datesLoaded.set(true);
       },
       error: () => {
         const today = new Date().toISOString().slice(0, 10);
         this.availableDays.set([{ isoDate: today, ...dayLabel(today) }]);
         this.selectedDate.set(today);
+        this.datesLoaded.set(true);
       },
     });
 
@@ -137,7 +150,7 @@ export class ComposeComponent implements OnInit, OnDestroy {
   get langLabel(): string { return LANG_LABELS[this.preferredLanguage()] ?? this.preferredLanguage(); }
   get langs(): string[] { return detectLangs(this.draft); }
   get wordCount(): number { return this.draft.trim().split(/\s+/).filter(Boolean).length; }
-  get canGenerate(): boolean { return this.draft.trim().length >= 10 && !this.loading; }
+  get canGenerate(): boolean { return this.draft.trim().length >= 10 && !this.loading && this.availableDays().length > 0; }
   get localPromptLine(): string {
     const lang = uiLanguageForPreference(this.auth.currentUser?.preferred_language);
     const nn = withNativeName(this.auth.currentUser?.name_native);
@@ -250,16 +263,20 @@ export class ComposeComponent implements OnInit, OnDestroy {
     }
   }
 
-  generateFromVoice(audioBlob: Blob) {
+  async generateFromVoice(audioBlob: Blob) {
     this.loading = true;
     this.error = '';
-    this.api.generateFromVoice(audioBlob, this.preferredLanguage(), this.selectedDate()).subscribe({
-      next: entry => this.router.navigate(['/entry', entry.id]),
-      error: err => {
-        this.error = err?.error?.detail ?? 'Voice generation failed. Please try again.';
-        this.loading = false;
-      },
-    });
+
+    try {
+      const base64Data = await fileToBase64(audioBlob);
+      sessionStorage.setItem('nin.pendingAudio', base64Data);
+      sessionStorage.setItem('nin.pendingLang', this.preferredLanguage());
+      sessionStorage.setItem('nin.pendingDate', this.selectedDate());
+      this.router.navigate(['/generating'], { state: { voiceMode: true } });
+    } catch (err: any) {
+      this.error = 'Failed to prepare your recording. Please try again.';
+      this.loading = false;
+    }
   }
 
   generate() {

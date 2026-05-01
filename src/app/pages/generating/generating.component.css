@@ -135,3 +135,39 @@
 .gen-step.active .gen-step-label {
   color: var(--ink);
 }
+
+/* Error state */
+.gen-status--error {
+  color: oklch(0.52 0.16 28);
+}
+
+.gen-error-msg {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 24rem;
+  text-align: center;
+}
+
+.gen-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: 0.0625rem solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 62rem;
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gen-retry-btn:hover {
+  background: var(--ink-soft);
+  transform: translateY(-0.0625rem);
+}

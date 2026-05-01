@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DiaryApiService, moodFromSummary } from '../../services/diary-api.service';
@@ -27,27 +27,8 @@ export class HistoryComponent implements OnInit {
   deletingId: string | null = null;
   deleteConfirmId: string | null = null;
 
-  filterLang = 'all';
-  filterMode = 'all';
-  showHidden = false;
+  viewMode = signal<'timeline' | 'grid'>('timeline');
   searchQuery = '';
-
-  langOptions = [
-    { value: 'all', label: 'All' },
-    { value: 'ta', label: 'Tamil' },
-    { value: 'hi', label: 'Hindi' },
-    { value: 'te', label: 'Telugu' },
-    { value: 'kn', label: 'Kannada' },
-    { value: 'ml', label: 'Malayalam' },
-    { value: 'en', label: 'English' },
-  ];
-
-  modeOptions = [
-    { value: 'all',              label: 'All modes' },
-    { value: 'SAME_LANGUAGE',   label: 'Same language' },
-    { value: 'ENGLISH_REFINED', label: 'English refined' },
-    { value: 'BILINGUAL',       label: 'Bilingual' },
-  ];
 
   constructor(private api: DiaryApiService, private router: Router) {}
 
@@ -63,14 +44,12 @@ export class HistoryComponent implements OnInit {
 
   get filteredEntries(): DiaryEntry[] {
     const q = this.searchQuery.trim().toLowerCase();
-    return this.entries.filter(e => {
-      const langOk = this.filterLang === 'all' || e.detected_language === this.filterLang;
-      const modeOk = this.filterMode === 'all' || e.output_mode === this.filterMode;
-      const hiddenOk = this.showHidden || !e.is_hidden;
-      const searchOk = !q || [e.title_original, e.title_english, e.content_original, e.content_english]
-        .some(t => t?.toLowerCase().includes(q));
-      return langOk && modeOk && hiddenOk && searchOk;
-    });
+    if (!q) return this.entries.filter(e => !e.is_hidden);
+    return this.entries.filter(e =>
+      !e.is_hidden &&
+      [e.title_original, e.title_english, e.content_original, e.content_english]
+        .some(t => t?.toLowerCase().includes(q))
+    );
   }
 
   get groupedEntries(): EntryGroup[] {
@@ -87,8 +66,6 @@ export class HistoryComponent implements OnInit {
       entries,
     }));
   }
-
-  get hiddenCount(): number { return this.entries.filter(e => e.is_hidden).length; }
 
   entryDay(d: string) { return new Date(d).getDate(); }
   entryDow(d: string) { return new Date(d).toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase(); }

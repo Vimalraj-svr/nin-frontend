@@ -2,35 +2,29 @@
 
   <!-- Header -->
   <div class="hist-head">
-    <!-- <div class="eyebrow">Your journal</div> -->
-    <h1>History</h1>
+    <h1>Pages</h1>
     <p class="lede">Every voice you've given to your thoughts.</p>
   </div>
 
   <!-- Filter bar -->
   <div class="filter-bar">
-    <div class="search-box">
-      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="search-input" type="text" placeholder="Search entries…" [(ngModel)]="searchQuery" />
-    </div>
+    <div class="filter-top-row">
+      <div class="search-box">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" placeholder="Search entries…" [(ngModel)]="searchQuery" />
+      </div>
 
-    <div class="pill-row">
-      @for (opt of langOptions; track opt.value) {
-        <button class="pill" [class.active]="filterLang === opt.value" (click)="filterLang = opt.value">{{ opt.label }}</button>
-      }
+      <div class="view-toggle">
+        <button class="view-btn" [class.active]="viewMode() === 'timeline'" (click)="viewMode.set('timeline')" title="Timeline">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="5" y="1" width="9" height="2" rx="1" fill="currentColor"/><rect x="5" y="6.5" width="9" height="2" rx="1" fill="currentColor"/><rect x="5" y="12" width="9" height="2" rx="1" fill="currentColor"/><circle cx="2" cy="2" r="1.5" fill="currentColor"/><circle cx="2" cy="7.5" r="1.5" fill="currentColor"/><circle cx="2" cy="13" r="1.5" fill="currentColor"/></svg>
+          Timeline
+        </button>
+        <button class="view-btn" [class.active]="viewMode() === 'grid'" (click)="viewMode.set('grid')" title="Grid">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
+          Grid
+        </button>
+      </div>
     </div>
-
-    <div class="pill-row pill-row--mode">
-      @for (opt of modeOptions; track opt.value) {
-        <button class="pill" [class.active]="filterMode === opt.value" (click)="filterMode = opt.value">{{ opt.label }}</button>
-      }
-    </div>
-
-    @if (hiddenCount > 0) {
-      <button class="pill pill--ghost" (click)="showHidden = !showHidden">
-        {{ showHidden ? 'Hide hidden' : hiddenCount + ' hidden' }}
-      </button>
-    }
   </div>
 
   <!-- Loading skeletons -->
@@ -78,8 +72,8 @@
     </div>
   }
 
-  <!-- Timeline -->
-  @if (!loading && !error && groupedEntries.length > 0) {
+  <!-- ── TIMELINE VIEW ── -->
+  @if (!loading && !error && groupedEntries.length > 0 && viewMode() === 'timeline') {
     <div class="timeline fade-in">
       @for (group of groupedEntries; track group.monthKey) {
         <div class="month-block">
@@ -90,20 +84,17 @@
 
           @for (entry of group.entries; track entry.id; let last = $last) {
             <div class="tl-row" (click)="openEntry(entry.id)" [class.is-hidden]="entry.is_hidden">
-              <!-- Date column -->
               <div class="date-col">
                 <div class="day-num">{{ entryDay(entry.created_at) }}</div>
                 <div class="day-dow">{{ entryDow(entry.created_at) }}</div>
                 <div class="day-time">{{ entryTime(entry.created_at) }}</div>
               </div>
 
-              <!-- Spine -->
               <div class="tl-spine">
                 <div class="tl-dot"></div>
                 @if (!last) { <div class="tl-line"></div> }
               </div>
 
-              <!-- Entry card -->
               <div class="entry-card">
                 <div class="entry-card-top">
                   @if (moodOf(entry); as mood) {
@@ -127,13 +118,46 @@
                     }
                   </div>
                 </div>
-
                 <h3 class="entry-title">{{ entryTitle(entry) }}</h3>
                 <p class="entry-preview">{{ entryPreview(entry) }}</p>
               </div>
             </div>
           }
         </div>
+      }
+    </div>
+  }
+
+  <!-- ── GRID VIEW ── -->
+  @if (!loading && !error && filteredEntries.length > 0 && viewMode() === 'grid') {
+    <div class="entries-grid fade-in">
+      @for (entry of filteredEntries; track entry.id) {
+        <article class="grid-card" (click)="openEntry(entry.id)" [class.is-hidden]="entry.is_hidden">
+          <div class="grid-card-head">
+            <app-orb [hue]="moodOf(entry).hue" [warmth]="moodOf(entry).warmth" size="sm" />
+            <div class="grid-date">
+              <span class="grid-day">{{ entryDay(entry.created_at) }}</span>
+              <span class="grid-dow">{{ entryDow(entry.created_at) }}</span>
+            </div>
+            <div class="entry-actions grid-actions">
+              @if (deleteConfirmId === entry.id) {
+                <button class="action-btn action-btn--danger" (click)="doDelete($event, entry.id)">Delete</button>
+                <button class="action-btn" (click)="cancelDelete($event)">Cancel</button>
+              } @else {
+                <button class="action-btn action-btn--del" (click)="confirmDelete($event, entry.id)" [disabled]="deletingId === entry.id">
+                  {{ deletingId === entry.id ? '…' : '✕' }}
+                </button>
+              }
+            </div>
+          </div>
+          <h3 class="grid-title">{{ entryTitle(entry) }}</h3>
+          <p class="grid-preview">{{ entryPreview(entry) }}</p>
+          <div class="grid-foot">
+            <span>{{ moodOf(entry).label.split(' · ')[0] }}</span>
+            <span class="sep"></span>
+            <span>{{ entryLang(entry) }}</span>
+          </div>
+        </article>
       }
     </div>
   }

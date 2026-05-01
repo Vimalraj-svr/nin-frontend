@@ -7,25 +7,45 @@
     <app-orb [hue]="orbHue" [warmth]="0.72" size="xl" [breathing]="true" />
   </div>
 
-  <div class="gen-body">
-    <div class="gen-status">{{ cur.status }}</div>
-    <div class="gen-quote serif">"{{ cur.quote }}"</div>
+  @if (error()) {
+    <!-- Error state -->
+    <div class="gen-body">
+      <div class="gen-status gen-status--error">something went wrong</div>
+      <div class="gen-error-msg serif">{{ error() }}</div>
+      <button class="gen-retry-btn" (click)="retryCompose()">
+        Try again
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  } @else {
+    <!-- Normal generating state -->
+    <div class="gen-body">
+      <div class="gen-status">{{ cur.status }}</div>
+      <div class="gen-quote serif">"{{ cur.quote }}"</div>
 
-    @if (transcriptSnippet()) {
-      <div class="gen-transcript">
-        <span class="gen-transcript-label">your words</span>
-        <span class="gen-transcript-text">{{ transcriptSnippet() }}</span>
-      </div>
-    }
-
-    <div class="gen-steps">
-      @for (s of steps; track $index) {
-        <div class="gen-step" [class]="stepState($index)">
-          <div class="gen-step-dot"></div>
-          <div class="gen-step-label">{{ s.status }}</div>
+      @if (voiceMode()) {
+        <div class="gen-transcript">
+          <span class="gen-transcript-label">listening to your voice</span>
+          <span class="gen-transcript-text">transcribing and shaping your words…</span>
+        </div>
+      } @else if (transcriptSnippet()) {
+        <div class="gen-transcript">
+          <span class="gen-transcript-label">your words</span>
+          <span class="gen-transcript-text">{{ transcriptSnippet() }}</span>
         </div>
       }
+
+      <div class="gen-steps">
+        @for (s of steps; track $index) {
+          <div class="gen-step" [class]="stepState($index)">
+            <div class="gen-step-dot"></div>
+            <div class="gen-step-label">{{ s.status }}</div>
+          </div>
+        }
+      </div>
     </div>
-  </div>
+  }
 
 </div>

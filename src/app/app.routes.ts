@@ -41,17 +41,13 @@ export const routes: Routes = [
       import('./pages/generating/generating.component').then(m => m.GeneratingComponent),
   },
   {
-    path: 'history',
+    path: 'pages',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/history/history.component').then(m => m.HistoryComponent),
   },
-  {
-    path: 'library',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/library/library.component').then(m => m.LibraryComponent),
-  },
+  { path: 'history', redirectTo: '/pages', pathMatch: 'full' },
+  { path: 'library', redirectTo: '/pages', pathMatch: 'full' },
   {
     path: 'entry/:id',
     canActivate: [authGuard],

@@ -43,6 +43,8 @@ export class GeneratingComponent implements OnInit, OnDestroy {
   steps = STEPS;
   currentStep = signal(0);
   transcriptSnippet = signal('');
+  error = signal('');
+  voiceMode = signal(false);
   private timer?: ReturnType<typeof setTimeout>;
   private apiDone = false;
   private animDone = false;
@@ -51,12 +53,64 @@ export class GeneratingComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private api: DiaryApiService) {}
 
   ngOnInit() {
-    const state = history.state as { req?: GenerateRequest };
+    const state = history.state as { req?: GenerateRequest; voiceMode?: boolean };
+    const isVoice = state?.voiceMode ?? false;
+    this.voiceMode.set(isVoice);
+
+    if (isVoice) {
+      this._startVoiceGenerate();
+    } else {
+      this._startTextGenerate(state?.req);
+    }
+
+    this.advance();
+  }
+
+  private _startVoiceGenerate() {
+    const audioBase64 = sessionStorage.getItem('nin.pendingAudio');
+    const lang = sessionStorage.getItem('nin.pendingLang') ?? 'auto';
+    const date = sessionStorage.getItem('nin.pendingDate') || undefined;
+
+    if (!audioBase64) {
+      this.apiDone = true;
+      this.error.set('No recording found. Please try again.');
+      return;
+    }
+
+    // Reconstruct Blob from base64
+    let blob: Blob;
+    try {
+      const binary = atob(audioBase64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      blob = new Blob([bytes], { type: 'audio/webm' });
+    } catch {
+      this.apiDone = true;
+      this.error.set('Could not read recording. Please try again.');
+      return;
+    }
+
+    this.api.generateFromVoice(blob, lang, date).subscribe({
+      next: entry => {
+        sessionStorage.removeItem('nin.pendingAudio');
+        this.pendingEntryId = entry.id;
+        this.apiDone = true;
+        this.tryFinish();
+      },
+      error: (err) => {
+        this.apiDone = true;
+        this.error.set(this._extractError(err));
+        this.tryFinish();
+      },
+    });
+  }
+
+  private _startTextGenerate(stateReq?: GenerateRequest) {
     const draft = sessionStorage.getItem('nin.pendingDraft') ?? '';
     const lang = sessionStorage.getItem('nin.pendingLang') ?? 'auto';
     const date = sessionStorage.getItem('nin.pendingDate') ?? undefined;
 
-    const req: GenerateRequest = state?.req ?? {
+    const req: GenerateRequest = stateReq ?? {
       transcript: draft,
       output_mode: 'auto' as any,
       language_override: lang,
@@ -73,13 +127,21 @@ export class GeneratingComponent implements OnInit, OnDestroy {
           this.apiDone = true;
           this.tryFinish();
         },
-        error: () => { this.apiDone = true; this.tryFinish(); },
+        error: (err) => {
+          this.apiDone = true;
+          this.error.set(this._extractError(err));
+          this.tryFinish();
+        },
       });
     } else {
       this.apiDone = true;
     }
+  }
 
-    this.advance();
+  private _extractError(err: any): string {
+    return err?.error?.detail
+      ?? err?.message
+      ?? 'Something went wrong. Please try again.';
   }
 
   private advance() {
@@ -96,16 +158,21 @@ export class GeneratingComponent implements OnInit, OnDestroy {
 
   private tryFinish() {
     if (this.animDone && this.apiDone) {
+      if (this.error()) return; // stay and show error
       setTimeout(() => {
         this.router.navigate(['/entry', this.pendingEntryId ?? 'new']);
       }, 600);
     }
   }
 
+  retryCompose() {
+    this.router.navigate(['/compose']);
+  }
+
   ngOnDestroy() { if (this.timer) clearTimeout(this.timer); }
 
   get cur() { return STEPS[Math.min(this.currentStep(), STEPS.length - 1)]; }
-  get orbHue() { return this.cur.hue; }
+  get orbHue() { return this.error() ? 0 : this.cur.hue; }
 
   stepState(i: number): string {
     const s = this.currentStep();

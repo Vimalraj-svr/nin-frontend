@@ -4,8 +4,29 @@
     <div class="compose-tam">{{ localPromptLine }}</div>
   }
 
-  <!-- Day picker: shown whenever days are available -->
-  @if (availableDays().length > 0) {
+  <!-- Loading state -->
+  @if (!datesLoaded()) {
+    <div class="dates-loading">
+      <div class="dates-loading-dot"></div>
+    </div>
+  }
+
+  <!-- All caught up — no days available -->
+  @if (datesLoaded() && availableDays().length === 0) {
+    <div class="all-done-wrap">
+      <div class="all-done-icon">✦</div>
+      <h2 class="all-done-title">You're all caught up{{ firstName ? ', ' + firstName : '' }}.</h2>
+      <p class="all-done-body">
+        You've already written for today and the last two days.<br>
+        Come back tomorrow — your pages will be waiting.
+      </p>
+    </div>
+  }
+
+  <!-- Full compose interface — only shown when days are available -->
+  @if (datesLoaded() && availableDays().length > 0) {
+
+    <!-- Day picker -->
     <div class="day-picker">
       <div class="day-picker-label">{{ availableDays().length > 1 ? 'Which day is this entry for?' : 'Writing for' }}</div>
       <div class="day-picker-row">
@@ -21,135 +42,131 @@
         }
       </div>
     </div>
-  } @else {
-    <div class="all-done-bar">
-      ✓ You've written entries for the last 3 days{{ firstName ? ', ' + firstName : '' }} — well done.
-    </div>
-  }
 
-  <div class="mode-picker">
-    <button class="mode-card" [class.selected]="inputMode() === 'write'" (click)="chooseMode('write')">
-      <span class="mode-card-title">Write it out</span>
-      <span class="mode-card-sub">Reflect in your own words and pace.</span>
-    </button>
-    <button class="mode-card" [class.selected]="inputMode() === 'speak'" (click)="chooseMode('speak')">
-      <span class="mode-card-title">Speak it out</span>
-      <span class="mode-card-sub">Press once, say it as it came, press again to stop.</span>
-    </button>
-  </div>
-
-  @if (inputMode() === 'write') {
-    <div class="suggestion-strip">
-      <span class="suggestion-label">running prompt</span>
-      <span class="suggestion-text" (click)="useSuggestion()">{{ currentSuggestion }}</span>
-      <button class="suggestion-next" (click)="nextSuggestion()" title="Next prompt">↻</button>
-    </div>
-
-    <div class="compose-box">
-      <textarea
-        #ta
-        class="compose-textarea"
-        [(ngModel)]="draft"
-        (input)="onInput()"
-        placeholder="Start with a line, then keep going..."
-      ></textarea>
-    </div>
-
-    <div class="compose-meta">
-      <div style="display:flex;align-items:center;gap:12px">
-        <span>Detected:</span>
-        <div class="lang-chips">
-          @if (langs.length === 0) {
-            <span class="lang-chip">—</span>
-          }
-          @for (l of langs; track l) {
-            <span class="lang-chip detected">{{ l }}</span>
-          }
-        </div>
-      </div>
-      <div>{{ wordCount }} words</div>
-    </div>
-  }
-
-  @if (inputMode() === 'speak') {
-    @if (showConfirmStep()) {
-      <div class="voice-confirm">
-        <div class="voice-confirm-icon">✓</div>
-        <div class="voice-confirm-dur">{{ formatDuration(recordingSeconds()) }} recorded</div>
-        <p class="voice-confirm-q">Does that sound right?</p>
-        <div class="voice-confirm-actions">
-          <button class="btn gold" (click)="confirmSend()" [disabled]="loading">
-            @if (loading) { Sending… } @else { Send it }
-          </button>
-          <button class="btn ghost" (click)="discardRecording()">Re-record</button>
-        </div>
-      </div>
-    } @else {
-      <div class="voice-area">
-        <button
-          class="voice-btn"
-          [class.recording]="isRecording"
-          [class.locked]="isRecording && recordingSeconds() < MIN_REC_SECS"
-          [disabled]="loading"
-          (click)="toggleRecording()"
-          [attr.aria-label]="isRecording ? 'Stop Recording' : 'Start Recording'">
-          @if (loading) {
-            <span class="voice-spinner"></span>
-          } @else if (isRecording) {
-            <div class="glow-ring"></div>
-            <div class="glow-ring delay-1"></div>
-            @if (recordingSeconds() < MIN_REC_SECS) {
-              <span class="voice-count">{{ MIN_REC_SECS - recordingSeconds() }}</span>
-            } @else {
-              <div class="mic-stop-icon"></div>
-            }
-          } @else {
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="mic-icon">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="currentColor"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          }
-        </button>
-        <div class="voice-hint">
-          @if (loading) { Transcribing your words… }
-          @else if (isRecording && recordingSeconds() < MIN_REC_SECS) { Hold… {{ MIN_REC_SECS - recordingSeconds() }}s }
-          @else if (isRecording) { {{ formatDuration(recordingSeconds()) }} — tap to stop }
-          @else { Tap and speak freely }
-        </div>
-        @if (isRecording) {
-          <div class="voice-timer-bar">
-            <div class="voice-timer-fill" [style.width.%]="(recordingSeconds() / MAX_REC_SECS) * 100"></div>
-          </div>
-        }
-        <div class="voice-sub">Speak for at least {{ MIN_REC_SECS }}s · up to {{ formatDuration(MAX_REC_SECS) }} · confirm before sending.</div>
-      </div>
-    }
-  }
-
-  <!-- Language mode (from user profile) -->
-  <div class="lang-mode-bar">
-    <div class="lang-mode-label">Writing mode</div>
-    <div class="lang-mode-value">{{ langLabel }}</div>
-    <a class="lang-mode-change" routerLink="/settings">Change in Settings →</a>
-  </div>
-
-  <!-- Error -->
-  @if (error) {
-    <div class="compose-error">{{ error }}</div>
-  }
-
-  <!-- Actions -->
-  @if (inputMode() === 'write') {
-    <div class="compose-actions">
-      <div class="meta">Everything stays on your device — nothing is sent without your hand on it.</div>
-      <button class="btn gold" [disabled]="!canGenerate" (click)="generate()">
-        Shape into an entry
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+    <div class="mode-picker">
+      <button class="mode-card" [class.selected]="inputMode() === 'write'" (click)="chooseMode('write')">
+        <span class="mode-card-title">Write it out</span>
+        <span class="mode-card-sub">Reflect in your own words and pace.</span>
+      </button>
+      <button class="mode-card" [class.selected]="inputMode() === 'speak'" (click)="chooseMode('speak')">
+        <span class="mode-card-title">Speak it out</span>
+        <span class="mode-card-sub">Press once, say it as it came, press again to stop.</span>
       </button>
     </div>
-  }
 
+    @if (inputMode() === 'write') {
+      <div class="suggestion-strip">
+        <span class="suggestion-label">running prompt</span>
+        <span class="suggestion-text" (click)="useSuggestion()">{{ currentSuggestion }}</span>
+        <button class="suggestion-next" (click)="nextSuggestion()" title="Next prompt">↻</button>
+      </div>
+
+      <div class="compose-box">
+        <textarea
+          #ta
+          class="compose-textarea"
+          [(ngModel)]="draft"
+          (input)="onInput()"
+          placeholder="Start with a line, then keep going..."
+        ></textarea>
+      </div>
+
+      <div class="compose-meta">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span>Detected:</span>
+          <div class="lang-chips">
+            @if (langs.length === 0) {
+              <span class="lang-chip">—</span>
+            }
+            @for (l of langs; track l) {
+              <span class="lang-chip detected">{{ l }}</span>
+            }
+          </div>
+        </div>
+        <div>{{ wordCount }} words</div>
+      </div>
+    }
+
+    @if (inputMode() === 'speak') {
+      @if (showConfirmStep()) {
+        <div class="voice-confirm">
+          <div class="voice-confirm-icon">✓</div>
+          <div class="voice-confirm-dur">{{ formatDuration(recordingSeconds()) }} recorded</div>
+          <p class="voice-confirm-q">Does that sound right?</p>
+          <div class="voice-confirm-actions">
+            <button class="btn gold" (click)="confirmSend()" [disabled]="loading">
+              @if (loading) { Sending… } @else { Send it }
+            </button>
+            <button class="btn ghost" (click)="discardRecording()">Re-record</button>
+          </div>
+        </div>
+      } @else {
+        <div class="voice-area">
+          <button
+            class="voice-btn"
+            [class.recording]="isRecording"
+            [class.locked]="isRecording && recordingSeconds() < MIN_REC_SECS"
+            [disabled]="loading"
+            (click)="toggleRecording()"
+            [attr.aria-label]="isRecording ? 'Stop Recording' : 'Start Recording'">
+            @if (loading) {
+              <span class="voice-spinner"></span>
+            } @else if (isRecording) {
+              <div class="glow-ring"></div>
+              <div class="glow-ring delay-1"></div>
+              @if (recordingSeconds() < MIN_REC_SECS) {
+                <span class="voice-count">{{ MIN_REC_SECS - recordingSeconds() }}</span>
+              } @else {
+                <div class="mic-stop-icon"></div>
+              }
+            } @else {
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="mic-icon">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="currentColor"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            }
+          </button>
+          <div class="voice-hint">
+            @if (loading) { Transcribing your words… }
+            @else if (isRecording && recordingSeconds() < MIN_REC_SECS) { Hold… {{ MIN_REC_SECS - recordingSeconds() }}s }
+            @else if (isRecording) { {{ formatDuration(recordingSeconds()) }} — tap to stop }
+            @else { Tap and speak freely }
+          </div>
+          @if (isRecording) {
+            <div class="voice-timer-bar">
+              <div class="voice-timer-fill" [style.width.%]="(recordingSeconds() / MAX_REC_SECS) * 100"></div>
+            </div>
+          }
+          <div class="voice-sub">Speak for at least {{ MIN_REC_SECS }}s · up to {{ formatDuration(MAX_REC_SECS) }} · confirm before sending.</div>
+        </div>
+      }
+    }
+
+    <!-- Language mode -->
+    <div class="lang-mode-bar">
+      <div class="lang-mode-label">Writing mode</div>
+      <div class="lang-mode-value">{{ langLabel }}</div>
+      <a class="lang-mode-change" routerLink="/settings">Change in Settings →</a>
+    </div>
+
+    <!-- Error -->
+    @if (error) {
+      <div class="compose-error">{{ error }}</div>
+    }
+
+    <!-- Submit -->
+    @if (inputMode() === 'write') {
+      <div class="compose-actions">
+        <div class="meta">Everything stays on your device — nothing is sent without your hand on it.</div>
+        <button class="btn gold" [disabled]="!canGenerate" (click)="generate()">
+          Shape into an entry
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    }
+
+  }
 </div>
