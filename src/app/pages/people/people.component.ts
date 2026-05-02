@@ -158,7 +158,13 @@ export class PeopleComponent implements OnInit {
 
   private _updateProfile(id: string, patch: Partial<SocialProfile>) {
     const update = (list: SocialProfile[]) =>
-      list.map(p => p.id === id ? { ...p, ...patch } : p);
+      list.map(p => {
+        if (p.id === id) {
+          Object.assign(p, patch);
+          return { ...p, ...patch };
+        }
+        return p;
+      });
     this.allUsers.update(update);
     this.following.update(update);
     this.followers.update(update);

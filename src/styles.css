@@ -502,6 +502,20 @@ app-root {
   /* border-radius: 0 0 0 1.25rem; */
 }
 
+.topbar-divider {
+  width: 0.0625rem;
+  height: 1rem;
+  background: var(--ink-mute);
+  opacity: 0.3;
+  flex-shrink: 0;
+}
+
+@media (max-width: 40.0000rem) {
+  .topbar-divider {
+    display: none;
+  }
+}
+
 .floral-left {
   position: absolute;
   bottom: -4.25rem;

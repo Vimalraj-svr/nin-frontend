@@ -104,7 +104,7 @@ const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/res
             <div class="crumb">{{ crumb() }}</div>
             <div style="display:flex;align-items:center;gap:0.75rem">
               <app-notif-bell />
-              <div style="width:0.0625rem;height:1rem;background:black;flex-shrink:0"></div>
+              <div class="topbar-divider"></div>
               <div class="date">{{ today }}</div>
             </div>
             <!-- <img class="floral-right" src="/assets/svgs/floral-corner-left.svg" alt="" aria-hidden="true" /> -->

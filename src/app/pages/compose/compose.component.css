@@ -344,6 +344,15 @@
   justify-content: center;
 }
 
+.compose-hint {
+  margin-top: 0.5000rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.8125rem;
+  color: var(--gold-deep, #b8860b);
+  line-height: 1.5;
+}
+
 .compose-error {
   margin-top: 0.5000rem;
   font-family: var(--mono);

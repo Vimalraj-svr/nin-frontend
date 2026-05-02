@@ -249,7 +249,7 @@ export class DiaryApiService {
     return `${this.baseUrl}/export/pdf`;
   }
 
-  checkHealth(): Observable<{ status: string; ollama: string; model: string; memory_entries: number }> {
+  checkHealth(): Observable<{ status: string; memory_entries: number }> {
     const base = environment.apiUrl.replace(/\/api$/, '');
     return this.http.get<any>(`${base}/health`);
   }

@@ -189,11 +189,11 @@ export class HomeComponent implements OnInit {
   }
 
   entryTitle(e: DiaryEntry): string {
-    return e.title_original ?? e.title_english ?? 'Untitled';
+    return e.title_edit ?? e.title_original ?? e.title_english ?? 'Untitled';
   }
 
   entryPreview(e: DiaryEntry): string {
-    const text = e.content_original ?? e.content_english ?? e.transcript ?? '';
+    const text = e.content_edit ?? e.content_original ?? e.content_english ?? e.transcript ?? '';
     const clean = text.replace(/\n+/g, ' ').trim();
     return clean.length > 130 ? clean.slice(0, 130) + '…' : clean;
   }

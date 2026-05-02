@@ -85,6 +85,11 @@
         </div>
         <div>{{ wordCount }} words</div>
       </div>
+      @if (tooShort) {
+        <div class="compose-hint">
+          Tell a little more — at least {{ MIN_WORDS }} words help shape a meaningful entry.
+        </div>
+      }
     }
 
     @if (inputMode() === 'speak') {
@@ -138,7 +143,7 @@
               <div class="voice-timer-fill" [style.width.%]="(recordingSeconds() / MAX_REC_SECS) * 100"></div>
             </div>
           }
-          <div class="voice-sub">Speak for at least {{ MIN_REC_SECS }}s · up to {{ formatDuration(MAX_REC_SECS) }} · confirm before sending.</div>
+          <div class="voice-sub">Speak for at least {{ MIN_REC_SECS }}s so your day comes through clearly · up to {{ formatDuration(MAX_REC_SECS) }}.</div>
         </div>
       }
     }

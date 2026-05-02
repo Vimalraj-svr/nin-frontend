@@ -98,8 +98,9 @@ export class ComposeComponent implements OnInit, OnDestroy {
   recordingBlob: Blob | null = null;
   showConfirmStep = signal(false);
   private recTimer?: ReturnType<typeof setInterval>;
-  readonly MIN_REC_SECS = 3;
+  readonly MIN_REC_SECS = 10;
   readonly MAX_REC_SECS = 120;
+  readonly MIN_WORDS = 5;
 
   private suggestionTimer?: ReturnType<typeof setInterval>;
 
@@ -150,7 +151,8 @@ export class ComposeComponent implements OnInit, OnDestroy {
   get langLabel(): string { return LANG_LABELS[this.preferredLanguage()] ?? this.preferredLanguage(); }
   get langs(): string[] { return detectLangs(this.draft); }
   get wordCount(): number { return this.draft.trim().split(/\s+/).filter(Boolean).length; }
-  get canGenerate(): boolean { return this.draft.trim().length >= 10 && !this.loading && this.availableDays().length > 0; }
+  get canGenerate(): boolean { return this.wordCount >= this.MIN_WORDS && !this.loading && this.availableDays().length > 0; }
+  get tooShort(): boolean { return this.draft.trim().length > 0 && this.wordCount < this.MIN_WORDS; }
   get localPromptLine(): string {
     const lang = uiLanguageForPreference(this.auth.currentUser?.preferred_language);
     const nn = withNativeName(this.auth.currentUser?.name_native);
