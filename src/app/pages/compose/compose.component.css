@@ -297,6 +297,26 @@
   cursor: not-allowed;
 }
 
+.voice-btn.counting-down {
+  border-color: var(--gold-deep, #b8860b);
+  color: var(--gold-deep, #b8860b);
+  background: oklch(0.97 0.04 70 / 0.25);
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 oklch(0.72 0.14 70 / 0.3); }
+  50%       { transform: scale(1.06); box-shadow: 0 0 0 0.625rem oklch(0.72 0.14 70 / 0); }
+}
+
+.voice-countdown {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold-deep, #b8860b);
+  line-height: 1;
+}
+
 .voice-timer-bar {
   width: 12.5000rem;
   height: 0.1875rem;

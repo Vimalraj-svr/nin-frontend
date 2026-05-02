@@ -97,7 +97,11 @@ export class ComposeComponent implements OnInit, OnDestroy {
   recordingSeconds = signal(0);
   recordingBlob: Blob | null = null;
   showConfirmStep = signal(false);
+  isCountingDown = signal(false);
+  countdown = signal(0);
   private recTimer?: ReturnType<typeof setInterval>;
+  private countdownTimer?: ReturnType<typeof setInterval>;
+  private pendingStream: MediaStream | null = null;
   readonly MIN_REC_SECS = 10;
   readonly MAX_REC_SECS = 120;
   readonly MIN_WORDS = 5;
@@ -144,6 +148,8 @@ export class ComposeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.suggestionTimer) clearInterval(this.suggestionTimer);
     if (this.recTimer) clearInterval(this.recTimer);
+    if (this.countdownTimer) clearInterval(this.countdownTimer);
+    this.pendingStream?.getTracks().forEach(t => t.stop());
   }
 
   get firstName(): string { return firstName(this.auth.currentUser?.name); }
@@ -185,8 +191,12 @@ export class ComposeComponent implements OnInit, OnDestroy {
   }
 
   async toggleRecording() {
+    if (this.isCountingDown()) {
+      this.cancelCountdown();
+      return;
+    }
     if (this.isRecording) {
-      if (this.recordingSeconds() < this.MIN_REC_SECS) return; // too short, ignore
+      if (this.recordingSeconds() < this.MIN_REC_SECS) return;
       this.stopRecording();
     } else {
       this.error = '';
@@ -194,34 +204,19 @@ export class ComposeComponent implements OnInit, OnDestroy {
       this.showConfirmStep.set(false);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-          ? 'audio/webm;codecs=opus'
-          : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
-        this.mediaRecorder = mimeType
-          ? new MediaRecorder(stream, { mimeType })
-          : new MediaRecorder(stream);
-        this.audioChunks = [];
-
-        this.mediaRecorder.ondataavailable = e => {
-          if (e.data.size > 0) this.audioChunks.push(e.data);
-        };
-
-        this.mediaRecorder.onstop = () => {
-          stream.getTracks().forEach(t => t.stop());
-          if (this.recTimer) clearInterval(this.recTimer);
-          const blob = new Blob(this.audioChunks, { type: this.mediaRecorder?.mimeType || 'audio/webm' });
-          this.recordingBlob = blob;
-          this.showConfirmStep.set(true);
-        };
-
-        this.mediaRecorder.start(250);
-        this.isRecording = true;
-        this.recordingSeconds.set(0);
-        this.recTimer = setInterval(() => {
-          this.recordingSeconds.update(s => {
-            const next = s + 1;
-            if (next >= this.MAX_REC_SECS) this.stopRecording();
-            return next;
+        this.pendingStream = stream;
+        this.isCountingDown.set(true);
+        this.countdown.set(3);
+        this.countdownTimer = setInterval(() => {
+          this.countdown.update(n => {
+            if (n <= 1) {
+              clearInterval(this.countdownTimer);
+              this.isCountingDown.set(false);
+              this.pendingStream = null;
+              this.startMediaRecorder(stream);
+              return 0;
+            }
+            return n - 1;
           });
         }, 1000);
       } catch (err: any) {
@@ -230,6 +225,47 @@ export class ComposeComponent implements OnInit, OnDestroy {
           : 'Could not access microphone.';
       }
     }
+  }
+
+  private cancelCountdown() {
+    if (this.countdownTimer) clearInterval(this.countdownTimer);
+    this.isCountingDown.set(false);
+    this.countdown.set(0);
+    this.pendingStream?.getTracks().forEach(t => t.stop());
+    this.pendingStream = null;
+  }
+
+  private startMediaRecorder(stream: MediaStream) {
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus'
+      : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+    this.mediaRecorder = mimeType
+      ? new MediaRecorder(stream, { mimeType })
+      : new MediaRecorder(stream);
+    this.audioChunks = [];
+
+    this.mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) this.audioChunks.push(e.data);
+    };
+
+    this.mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      if (this.recTimer) clearInterval(this.recTimer);
+      const blob = new Blob(this.audioChunks, { type: this.mediaRecorder?.mimeType || 'audio/webm' });
+      this.recordingBlob = blob;
+      this.showConfirmStep.set(true);
+    };
+
+    this.mediaRecorder.start(250);
+    this.isRecording = true;
+    this.recordingSeconds.set(0);
+    this.recTimer = setInterval(() => {
+      this.recordingSeconds.update(s => {
+        const next = s + 1;
+        if (next >= this.MAX_REC_SECS) this.stopRecording();
+        return next;
+      });
+    }, 1000);
   }
 
   private stopRecording() {

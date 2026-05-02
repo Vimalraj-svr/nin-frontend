@@ -110,17 +110,24 @@
           <button
             class="voice-btn"
             [class.recording]="isRecording"
+            [class.counting-down]="isCountingDown()"
             [class.locked]="isRecording && recordingSeconds() < MIN_REC_SECS"
             [disabled]="loading"
             (click)="toggleRecording()"
-            [attr.aria-label]="isRecording ? 'Stop Recording' : 'Start Recording'">
+            [attr.aria-label]="isRecording ? 'Stop Recording' : isCountingDown() ? 'Cancel' : 'Start Recording'">
             @if (loading) {
               <span class="voice-spinner"></span>
+            } @else if (isCountingDown()) {
+              <span class="voice-countdown">{{ countdown() }}</span>
             } @else if (isRecording) {
               <div class="glow-ring"></div>
               <div class="glow-ring delay-1"></div>
               @if (recordingSeconds() < MIN_REC_SECS) {
-                <span class="voice-count">{{ MIN_REC_SECS - recordingSeconds() }}</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="mic-icon" style="opacity:0.4">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="currentColor"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
               } @else {
                 <div class="mic-stop-icon"></div>
               }
@@ -134,7 +141,8 @@
           </button>
           <div class="voice-hint">
             @if (loading) { Transcribing your words… }
-            @else if (isRecording && recordingSeconds() < MIN_REC_SECS) { Hold… {{ MIN_REC_SECS - recordingSeconds() }}s }
+            @else if (isCountingDown()) { Get ready… {{ countdown() }} }
+            @else if (isRecording && recordingSeconds() < MIN_REC_SECS) { Speak freely · stop unlocks in {{ MIN_REC_SECS - recordingSeconds() }}s }
             @else if (isRecording) { {{ formatDuration(recordingSeconds()) }} — tap to stop }
             @else { Tap and speak freely }
           </div>
