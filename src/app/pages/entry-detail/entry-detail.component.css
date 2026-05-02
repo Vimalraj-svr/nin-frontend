@@ -12,8 +12,20 @@
   border: 0.0625rem solid var(--rule);
   border-radius: 0.375rem;
   padding: 0.5rem 0.875rem;
-  margin-bottom: 1rem;
 }
+
+.shared-viewer-banner strong {
+  color: var(--ink);
+  font-weight: 600;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--serif);
+  font-size: 0.75rem;
+}
+
+.banner-sep { opacity: 0.4; }
+.banner-readonly { opacity: 0.6; }
 
 /* ── share count badge on Share button ───────────────────────────────── */
 .share-count {
@@ -490,6 +502,11 @@
   padding: 1.1250rem 0 1.5000rem;
   border-top: 0.0625rem solid var(--rule);
   margin-top: 2.5000rem;
+
+  @media (max-width: 40.0000rem) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .action-group {
@@ -557,7 +574,7 @@
   margin-left: auto;
 }
 
-/* ── translation ─────────────────────────────────────────────────────── */
+/* ── translation ────────────────────────────────────────────────────── */
 
 .entry-translation { margin-top: 2.5000rem; padding-top: 2.0000rem; border-top: 0.0625rem solid var(--rule); }
 .entry-translation-rule {
@@ -694,6 +711,207 @@
 
 .comment-submit:hover:not(:disabled) { background: oklch(0.22 0.02 40); }
 .comment-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── shared social ───────────────────────────────────────────────────── */
+
+.shared-social {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 0.0625rem solid var(--rule);
+}
+
+.shared-social--viewer {
+  background: oklch(0.975 0.015 60 / 0.5);
+  border: 0.0625rem solid oklch(0.9 0.04 60);
+  border-radius: 0.875rem;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.shared-social-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+  margin-bottom: 1.25rem;
+}
+
+/* Reaction rows (owner view) */
+.reaction-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.reaction-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.reaction-user {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+  min-width: 5rem;
+}
+
+.reaction-emojis {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.reaction-em {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* Reaction bar (viewer) */
+.reaction-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.875rem;
+}
+
+.reaction-chip {
+  background: var(--paper);
+  border: 0.0625rem solid var(--rule);
+  border-radius: 6.25rem;
+  padding: 0.3125rem 0.625rem;
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.reaction-chip:hover { border-color: oklch(0.75 0.08 60); transform: scale(1.15); }
+
+.reaction-chip--active {
+  background: oklch(0.94 0.06 60);
+  border-color: oklch(0.75 0.1 60);
+  transform: scale(1.05);
+}
+
+.my-reactions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.my-reactions-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-ghost);
+}
+
+.my-reaction-badge {
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: transform 0.12s, opacity 0.12s;
+  line-height: 1;
+}
+
+.my-reaction-badge:hover { transform: scale(0.85); opacity: 0.6; }
+
+/* Thread */
+.shared-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.shared-thread-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.thread-avatar {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: oklch(0.88 0.06 60);
+  border: 0.0625rem solid oklch(0.82 0.08 60);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: oklch(0.42 0.08 60);
+}
+
+.thread-avatar--owner {
+  background: oklch(0.84 0.09 42);
+  border-color: oklch(0.76 0.12 42);
+  color: oklch(0.35 0.1 42);
+}
+
+.thread-body { flex: 1; min-width: 0; }
+
+.thread-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3125rem;
+}
+
+.thread-name {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.thread-badge {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: oklch(0.9 0.06 42);
+  color: oklch(0.42 0.1 42);
+  border-radius: 0.25rem;
+  padding: 0.0625rem 0.3125rem;
+}
+
+.thread-time {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-ghost);
+  margin-left: auto;
+}
+
+.thread-text {
+  background: var(--paper);
+  border: 0.0625rem solid oklch(0.91 0.03 60);
+  border-radius: 0 0.625rem 0.625rem 0.625rem;
+  padding: 0.625rem 0.875rem;
+  font-family: var(--serif);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.shared-thread-item--owner .thread-text {
+  border-radius: 0.625rem 0 0.625rem 0.625rem;
+  background: oklch(0.975 0.02 42 / 0.6);
+  border-color: oklch(0.9 0.05 42);
+}
 
 /* ── responsive ──────────────────────────────────────────────────────── */
 

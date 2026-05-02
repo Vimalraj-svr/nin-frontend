@@ -98,7 +98,7 @@
               <div class="entry-card">
                 <div class="entry-card-top">
                   @if (moodOf(entry); as mood) {
-                    <app-mood-emoji [primary]="mood.primary" size="xs" />
+                    <app-mood-emoji [primary]="mood.primary" size="md" />
                   }
                   <span class="entry-lang">{{ entryLang(entry) }}</span>
                   @if (emotionOf(entry); as emo) {
@@ -134,7 +134,7 @@
       @for (entry of filteredEntries; track entry.id) {
         <article class="grid-card" (click)="openEntry(entry.id)" [class.is-hidden]="entry.is_hidden">
           <div class="grid-card-head">
-            <app-mood-emoji [primary]="moodOf(entry).primary" size="sm" />
+            <app-mood-emoji [primary]="moodOf(entry).primary" size="lg" />
             <div class="grid-date">
               <span class="grid-day">{{ entryDay(entry.created_at) }}</span>
               <span class="grid-dow">{{ entryDow(entry.created_at) }}</span>
@@ -177,7 +177,7 @@
         @for (entry of sharedWithMe(); track entry.id) {
           <article class="shared-card" (click)="openEntry(entry.id)">
             <div class="shared-card-top">
-              <app-mood-emoji [primary]="moodOf(entry).primary" size="xs" />
+              <app-mood-emoji [primary]="moodOf(entry).primary" size="md" />
               <span class="shared-by">from {{ entry.shared_by_name }}</span>
             </div>
             <h3 class="shared-title">{{ entryTitle(entry) }}</h3>

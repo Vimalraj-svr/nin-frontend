@@ -9,7 +9,7 @@ import { normalizePreferredLanguage, shouldShowLocalizedCompanion, uiLanguageFor
 import { firstName, withName, withNativeName } from '../../utils/personalize';
 
 const LANG_LABELS: Record<string, string> = {
-  auto:      'Auto-detect — keep your natural voice',
+  // auto:      'Auto-detect — keep your natural voice',
   bilingual: 'Bilingual — original + English side by side',
   en:        'English — shaped into expressive English',
   ta:        'Tamil — தமிழில் எழுதப்படும்',

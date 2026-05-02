@@ -103,7 +103,7 @@
         <div class="vibe-result">
           <div class="vibe-orbs-row">
             <div class="vibe-side">
-              <app-orb [hue]="vibeResult()!.my_vibe_hue" [warmth]="0.72" size="sm" [breathing]="true" />
+              <div class="vibe-dot" [style.--vh]="vibeResult()!.my_vibe_hue"></div>
               <div class="vibe-traits">
                 @for (t of vibeResult()!.traits_a; track t) {
                   <span class="trait-chip" [style.--th]="vibeResult()!.my_vibe_hue">{{ t }}</span>
@@ -116,7 +116,7 @@
             </div>
 
             <div class="vibe-side">
-              <app-orb [hue]="vibeResult()!.their_vibe_hue" [warmth]="0.72" size="sm" [breathing]="true" />
+              <div class="vibe-dot" [style.--vh]="vibeResult()!.their_vibe_hue"></div>
               <div class="vibe-traits">
                 @for (t of vibeResult()!.traits_b; track t) {
                   <span class="trait-chip" [style.--th]="vibeResult()!.their_vibe_hue">{{ t }}</span>
@@ -131,7 +131,7 @@
     </div>
   }
 
-  <!-- Shared memories -->
+  <!-- Shared memories — from them -->
   @if (sharedEntries().length > 0) {
     <div class="shared-section">
       <div class="shared-head">
@@ -146,11 +146,43 @@
       <div class="shared-list">
         @for (entry of sharedEntries(); track entry.id) {
           <div class="shared-row" (click)="openEntry(entry.id)">
-            <div class="shared-row-title">{{ entryTitle(entry) }}</div>
-            <p class="shared-row-preview">{{ entryPreview(entry) }}</p>
-            <div class="shared-row-meta">
-              <span>{{ entryDate(entry.created_at) }}</span>
-              @if (entryLang(entry)) { <span class="meta-sep">·</span> <span>{{ entryLang(entry) }}</span> }
+            <app-mood-emoji [primary]="moodPrimary(entry)" size="md" class="shared-row-mood" />
+            <div class="shared-row-body">
+              <div class="shared-row-title">{{ entryTitle(entry) }}</div>
+              <p class="shared-row-preview">{{ entryPreview(entry) }}</p>
+              <div class="shared-row-meta">
+                <span>{{ entryDate(entry.created_at) }}</span>
+                @if (entryLang(entry)) { <span class="meta-sep">·</span> <span>{{ entryLang(entry) }}</span> }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Shared memories — by you -->
+  @if (sharedByMe().length > 0) {
+    <div class="shared-section shared-section--mine">
+      <div class="shared-head">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+          <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+        </svg>
+        <span>Shared by you</span>
+        <span class="shared-count">{{ sharedByMe().length }}</span>
+      </div>
+      <div class="shared-list">
+        @for (entry of sharedByMe(); track entry.id) {
+          <div class="shared-row" (click)="openEntry(entry.id)">
+            <app-mood-emoji [primary]="moodPrimary(entry)" size="md" class="shared-row-mood" />
+            <div class="shared-row-body">
+              <div class="shared-row-title">{{ entryTitle(entry) }}</div>
+              <p class="shared-row-preview">{{ entryPreview(entry) }}</p>
+              <div class="shared-row-meta">
+                <span>{{ entryDate(entry.created_at) }}</span>
+                @if (entryLang(entry)) { <span class="meta-sep">·</span> <span>{{ entryLang(entry) }}</span> }
+              </div>
             </div>
           </div>
         }

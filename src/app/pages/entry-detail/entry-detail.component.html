@@ -35,7 +35,7 @@
         @if (titleEnglish) { <div class="entry-english-title">{{ titleEnglish }}</div> }
 
         <!-- Emotion flag strip -->
-        @if (apiEntry()) {
+        @if (apiEntry() && viewerIsOwner()) {
           <div class="emotion-strip">
             @for (ef of emotionFlags; track ef.value) {
               <button
@@ -61,9 +61,9 @@
       </div>
 
       <div class="mood-stack">
-        <app-orb [hue]="mood.hue" [warmth]="mood.warmth" size="lg" [breathing]="true" />
+        <app-mood-emoji [primary]="mood.primary" size="xxxxl" />
         <div class="label">Detected mood</div>
-        <div class="name">{{ mood.label }}</div>
+        <div class="name">{{ moodLabel }}</div>
         @if (currentEmotionInfo) {
           <div class="flagged-emotion" [style.color]="currentEmotionInfo.color">
             {{ currentEmotionInfo.emoji }} {{ currentEmotionInfo.label }}
@@ -178,7 +178,13 @@
       @if (apiEntry() && !viewerIsOwner()) {
         <div class="shared-viewer-banner">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Shared with you · read only
+          @if (ownerName()) {
+            <span>Shared by <strong>{{ ownerName() }}</strong></span>
+          } @else {
+            <span>Shared with you</span>
+          }
+          <span class="banner-sep">·</span>
+          <span class="banner-readonly">read only</span>
         </div>
       }
 
@@ -241,8 +247,8 @@
     <!-- hidden file input -->
     <input #imageInput type="file" accept="image/*" style="display:none" [disabled]="!imageUploadEnabled" (change)="imageUploadEnabled && onImageSelected($event)">
 
-    <!-- ── Comments ───────────────────────────────────── -->
-    @if (apiEntry()) {
+    <!-- ── Comments (owner private notes) ──────────────────────────── -->
+    @if (apiEntry() && viewerIsOwner()) {
       <div class="comments-section">
         <div class="comments-head">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -274,6 +280,127 @@
           </button>
         </div>
       </div>
+    }
+
+    <!-- ── Shared social: reactions + notes ────────────────────────── -->
+    @if (apiEntry()) {
+
+      <!-- Owner sees all friend reactions and notes -->
+      @if (viewerIsOwner() && (sharedReactions().length > 0 || sharedComments().length > 0)) {
+        <div class="shared-social">
+          <div class="shared-social-head">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            From friends
+          </div>
+
+          @if (reactionsByUser.length > 0) {
+            <div class="reaction-rows">
+              @for (row of reactionsByUser; track row.userId) {
+                <div class="reaction-row">
+                  <span class="reaction-user">{{ row.userName }}</span>
+                  <span class="reaction-emojis">
+                    @for (em of row.emojis; track $index) {
+                      <span class="reaction-em">{{ em }}</span>
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+          }
+
+          @if (sharedComments().length > 0) {
+            <div class="shared-thread">
+              @for (c of sharedComments(); track c.id) {
+                <div class="shared-thread-item">
+                  <div class="thread-avatar">{{ c.user_name.charAt(0).toUpperCase() }}</div>
+                  <div class="thread-body">
+                    <div class="thread-meta">
+                      <span class="thread-name">{{ c.user_name }}</span>
+                      <span class="thread-time">{{ commentDate(c.created_at) }}</span>
+                      <button class="comment-delete" (click)="removeSharedComment(c.id)" title="Remove">✕</button>
+                    </div>
+                    <div class="thread-text">{{ c.text }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Shared viewer: can react + leave notes, sees owner's too -->
+      @if (!viewerIsOwner()) {
+        <div class="shared-social shared-social--viewer">
+          <div class="shared-social-head">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Notes &amp; reactions
+          </div>
+
+          <div class="reaction-bar">
+            @for (em of QUICK_REACTIONS; track em) {
+              <button
+                class="reaction-chip"
+                [class.reaction-chip--active]="!!myReaction(em)"
+                (click)="toggleReaction(em)"
+                [title]="myReaction(em) ? 'Remove' : 'React with ' + em"
+              >{{ em }}</button>
+            }
+          </div>
+
+          @if (sharedReactions().length > 0) {
+            <div class="my-reactions">
+              <span class="my-reactions-label">Your reactions</span>
+              @for (r of sharedReactions(); track r.id) {
+                <span class="my-reaction-badge" (click)="removeSharedReaction(r.id)" title="Remove">{{ r.emoji }}</span>
+              }
+            </div>
+          }
+
+          <div class="shared-thread">
+            @for (c of comments(); track c.id) {
+              <div class="shared-thread-item shared-thread-item--owner">
+                <div class="thread-avatar thread-avatar--owner">{{ (ownerName() || 'O').charAt(0).toUpperCase() }}</div>
+                <div class="thread-body">
+                  <div class="thread-meta">
+                    <span class="thread-name">{{ ownerName() || 'Owner' }}</span>
+                    <span class="thread-badge">owner</span>
+                    <span class="thread-time">{{ commentDate(c.created_at) }}</span>
+                  </div>
+                  <div class="thread-text">{{ c.text }}</div>
+                </div>
+              </div>
+            }
+            @for (c of sharedComments(); track c.id) {
+              <div class="shared-thread-item">
+                <div class="thread-avatar">You</div>
+                <div class="thread-body">
+                  <div class="thread-meta">
+                    <span class="thread-name">You</span>
+                    <span class="thread-time">{{ commentDate(c.created_at) }}</span>
+                    <button class="comment-delete" (click)="removeSharedComment(c.id)" title="Remove">✕</button>
+                  </div>
+                  <div class="thread-text">{{ c.text }}</div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="comment-compose" style="margin-top:0.75rem">
+            <textarea
+              class="comment-input"
+              [(ngModel)]="newSharedComment"
+              placeholder="Leave a note on this memory…"
+              rows="2"
+              (keydown.meta.enter)="submitSharedComment()"
+              (keydown.ctrl.enter)="submitSharedComment()">
+            </textarea>
+            <button class="comment-submit" (click)="submitSharedComment()" [disabled]="!newSharedComment.trim() || addingSharedComment">
+              {{ addingSharedComment ? '…' : 'Add' }}
+            </button>
+          </div>
+        </div>
+      }
+
     }
 
   </div>

@@ -11,7 +11,7 @@ interface LangOption {
 }
 
 const LANGUAGES: LangOption[] = [
-  { value: 'auto',      label: 'Auto-detect',  desc: 'Keep whatever language you naturally speak in.' },
+  // { value: 'auto',      label: 'Auto-detect',  desc: 'Keep whatever language you naturally speak in.' },
   { value: 'bilingual', label: 'Bilingual',     desc: 'Your original voice + a graceful English version side by side.' },
   { value: 'en',        label: 'English',       script: 'English', desc: 'Shape everything into expressive English, regardless of input.' },
   { value: 'ta',        label: 'Tamil',         script: 'தமிழ்',   desc: 'Every entry written in Tamil — even if you spoke in a mix.' },
@@ -138,6 +138,6 @@ export class SettingsComponent implements OnInit {
   }
 
   get currentLangLabel(): string {
-    return LANGUAGES.find(l => l.value === this.selectedLang())?.label ?? 'Auto-detect';
+    return LANGUAGES.find(l => l.value === this.selectedLang())?.label ?? 'Bilingual';
   }
 }

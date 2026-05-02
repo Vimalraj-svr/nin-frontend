@@ -26,6 +26,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }
 
 html,
@@ -157,7 +162,7 @@ app-root {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: 1;
   overflow: hidden;
 }
 
@@ -191,6 +196,7 @@ app-root {
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -1005,7 +1011,7 @@ app-root {
 
 /* ── Compose ── */
 .compose-wrap {
-  max-width: 58.7500rem;
+  max-width: 80%;
   margin: 0 auto;
   padding: 4.0000rem 3.0000rem 7.5000rem;
 }
@@ -1306,7 +1312,7 @@ app-root {
 
 /* ── Entry View ── */
 .entry-view {
-  max-width: 47.5000rem;
+  max-width: 90%;
   margin: 0 auto;
   padding: 4.0000rem 3.0000rem 7.5000rem;
 }

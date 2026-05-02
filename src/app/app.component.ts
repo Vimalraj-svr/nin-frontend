@@ -30,18 +30,26 @@ const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/res
       <router-outlet />
     } @else {
       <div class="emoji-scatter" aria-hidden="true">
-        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:6%;left:3%;width:2rem;opacity:0.07;transform:rotate(-14deg)" />
-        <img src="/assets/svgs/emojis/heart.svg"            class="es" style="top:13%;right:5%;width:2.5rem;opacity:0.06;transform:rotate(18deg)" />
-        <img src="/assets/svgs/emojis/flower.svg"           class="es" style="top:30%;left:1.5%;width:2.75rem;opacity:0.055;transform:rotate(-7deg)" />
-        <img src="/assets/svgs/emojis/happy-smile-1.svg"   class="es" style="top:46%;right:2.5%;width:2.25rem;opacity:0.05;transform:rotate(22deg)" />
-        <img src="/assets/svgs/emojis/moon.svg"             class="es" style="top:61%;left:4%;width:2rem;opacity:0.065;transform:rotate(-20deg)" />
-        <img src="/assets/svgs/emojis/star-eyes.svg"        class="es" style="top:75%;right:6%;width:2.5rem;opacity:0.055;transform:rotate(10deg)" />
-        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:87%;left:10%;width:1.75rem;opacity:0.06;transform:rotate(28deg)" />
-        <img src="/assets/svgs/emojis/happy-smile-wink.svg" class="es" style="top:22%;right:22%;width:2.25rem;opacity:0.04;transform:rotate(-6deg)" />
-        <img src="/assets/svgs/emojis/flower.svg"           class="es" style="top:53%;left:18%;width:1.875rem;opacity:0.04;transform:rotate(16deg)" />
-        <img src="/assets/svgs/emojis/heart.svg"            class="es" style="top:91%;right:16%;width:1.875rem;opacity:0.05;transform:rotate(-12deg)" />
-        <img src="/assets/svgs/emojis/sun.svg"              class="es" style="top:38%;right:14%;width:2rem;opacity:0.04;transform:rotate(8deg)" />
-        <img src="/assets/svgs/emojis/music.svg"            class="es" style="top:70%;left:28%;width:1.75rem;opacity:0.04;transform:rotate(-22deg)" />
+        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:5%;left:2.5%;width:3.25rem;opacity:0.10;transform:rotate(-14deg)" />
+        <img src="/assets/svgs/emojis/heart.svg"            class="es" style="top:12%;right:4%;width:3.75rem;opacity:0.09;transform:rotate(18deg)" />
+        <img src="/assets/svgs/emojis/flower.svg"           class="es" style="top:28%;left:1%;width:4rem;opacity:0.08;transform:rotate(-7deg)" />
+        <img src="/assets/svgs/emojis/happy-smile-1.svg"    class="es" style="top:45%;right:2%;width:3.5rem;opacity:0.08;transform:rotate(22deg)" />
+        <img src="/assets/svgs/emojis/moon.svg"             class="es" style="top:60%;left:3%;width:3.25rem;opacity:0.10;transform:rotate(-20deg)" />
+        <img src="/assets/svgs/emojis/star-eyes.svg"        class="es" style="top:74%;right:5%;width:3.75rem;opacity:0.08;transform:rotate(10deg)" />
+        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:87%;left:8%;width:3rem;opacity:0.09;transform:rotate(28deg)" />
+        <img src="/assets/svgs/emojis/happy-smile-wink.svg" class="es" style="top:21%;right:21%;width:3.5rem;opacity:0.07;transform:rotate(-6deg)" />
+        <img src="/assets/svgs/emojis/flower.svg"           class="es" style="top:52%;left:16%;width:3.125rem;opacity:0.07;transform:rotate(16deg)" />
+        <img src="/assets/svgs/emojis/heart.svg"            class="es" style="top:91%;right:14%;width:3.125rem;opacity:0.08;transform:rotate(-12deg)" />
+        <img src="/assets/svgs/emojis/sun.svg"              class="es" style="top:37%;right:12%;width:3.25rem;opacity:0.07;transform:rotate(8deg)" />
+        <img src="/assets/svgs/emojis/music.svg"            class="es" style="top:68%;left:26%;width:3rem;opacity:0.07;transform:rotate(-22deg)" />
+        <img src="/assets/svgs/emojis/thinking.svg"         class="es" style="top:15%;left:41%;width:3rem;opacity:0.06;transform:rotate(5deg)" />
+        <img src="/assets/svgs/emojis/kiss-emoji.svg"       class="es" style="top:43%;left:37%;width:3.125rem;opacity:0.06;transform:rotate(-18deg)" />
+        <img src="/assets/svgs/emojis/happy-smile-2.svg"    class="es" style="top:77%;left:47%;width:3.375rem;opacity:0.07;transform:rotate(14deg)" />
+        <img src="/assets/svgs/emojis/anxious.svg"          class="es" style="top:32%;right:30%;width:2.875rem;opacity:0.06;transform:rotate(-8deg)" />
+        <img src="/assets/svgs/emojis/sun.svg"              class="es" style="top:7%;right:38%;width:3.125rem;opacity:0.06;transform:rotate(-3deg)" />
+        <img src="/assets/svgs/emojis/sparkle.svg"          class="es" style="top:95%;left:50%;width:2.875rem;opacity:0.06;transform:rotate(31deg)" />
+        <img src="/assets/svgs/emojis/moon.svg"             class="es" style="top:56%;right:37%;width:3.25rem;opacity:0.07;transform:rotate(-16deg)" />
+        <img src="/assets/svgs/emojis/sad.svg"              class="es" style="top:82%;right:27%;width:2.875rem;opacity:0.05;transform:rotate(23deg)" />
       </div>
       <div class="app">
         <aside class="sidebar">

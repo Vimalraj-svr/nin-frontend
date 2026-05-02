@@ -26,6 +26,22 @@ export interface EntryComment {
   created_at: string;
 }
 
+export interface SharedComment {
+  id: string;
+  user_id: string;
+  user_name: string;
+  text: string;
+  created_at: string;
+}
+
+export interface SharedReaction {
+  id: string;
+  user_id: string;
+  user_name: string;
+  emoji: string;
+  created_at: string;
+}
+
 export interface DiaryEntry {
   id: string;
   transcript: string;
@@ -47,8 +63,9 @@ export interface DiaryEntry {
   emotion_flag: EmotionFlag | null;
   shared_with: string[];
   viewer_is_owner: boolean;
-  // only present on shared-with-me responses
   shared_by_name?: string;
+  shared_comments: SharedComment[];
+  shared_reactions: SharedReaction[];
 }
 
 export interface SocialProfile {
@@ -91,7 +108,7 @@ export interface OutputModeOption {
 }
 
 export const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { code: 'auto',  label: 'Auto-Detect', nativeLabel: 'Auto',        flag: '🔍' },
+  // { code: 'auto',  label: 'Auto-Detect', nativeLabel: 'Auto',        flag: '🔍' },
   { code: 'ta',    label: 'Tamil',       nativeLabel: 'தமிழ்',       flag: '🇮🇳' },
   { code: 'hi',    label: 'Hindi',       nativeLabel: 'हिन्दी',      flag: '🇮🇳' },
   { code: 'te',    label: 'Telugu',      nativeLabel: 'తెలుగు',      flag: '🇮🇳' },

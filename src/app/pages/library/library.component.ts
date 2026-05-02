@@ -4,12 +4,7 @@ import { MoodEmojiComponent } from '../../components/mood-emoji/mood-emoji.compo
 import { DiaryApiService, moodFromSummary, MoodInfo } from '../../services/diary-api.service';
 import { DiaryEntry } from '../../models/diary.model';
 import { AuthService } from '../../services/auth.service';
-import { localizedBrandMark, shouldShowLocalizedCompanion, uiLanguageForPreference } from '../../utils/ui-language';
-
-const MOOD_LABELS: Record<string, string> = {
-  joyful: 'Joyful', tender: 'Tender', content: 'Content',
-  uncertain: 'Uncertain', heavy: 'Heavy', anxious: 'Anxious',
-};
+import { localizedBrandMark, localizedMoodLabel, shouldShowLocalizedCompanion, uiLanguageForPreference } from '../../utils/ui-language';
 
 const LANG_LABELS: Record<string, string> = {
   ta: 'Tamil', en: 'English', hi: 'Hindi', ml: 'Malayalam', te: 'Telugu', kn: 'Kannada',
@@ -32,12 +27,12 @@ export class LibraryComponent implements OnInit {
 
   readonly dynamicFilters = computed(() => {
     const seen = new Set<string>();
-    const result: { id: string; label: string }[] = [{ id: 'all', label: 'All' }];
+    const result: { id: string; label: string }[] = [{ id: 'all', label: 'all' }];
     for (const entry of this.entries()) {
       const primary = moodFromSummary(entry.mood_summary).primary;
       if (!seen.has(primary)) {
         seen.add(primary);
-        result.push({ id: primary, label: MOOD_LABELS[primary] ?? primary });
+        result.push({ id: primary, label: primary });
       }
     }
     return result;
@@ -96,30 +91,15 @@ export class LibraryComponent implements OnInit {
     return 'Your memories';
   }
 
-  filterLabel(base: string): string {
-    if (base === 'All') return base;
+  filterLabel(primary: string): string {
+    if (primary === 'all') return 'All';
     const lang = uiLanguageForPreference(this.auth.currentUser?.preferred_language);
-    if (lang === 'ta') {
-      return ({
-        Joyful: 'மகிழ்ச்சி',
-        Tender: 'நெகிழ்ச்சி',
-        Content: 'அமைதி',
-        Uncertain: 'தயக்கம்',
-        Heavy: 'கனமான',
-        Anxious: 'பதற்றம்',
-      } as Record<string, string>)[base] ?? base;
-    }
-    if (lang === 'hi') {
-      return ({
-        Joyful: 'प्रसन्न',
-        Tender: 'कोमल',
-        Content: 'शांत',
-        Uncertain: 'अनिश्चित',
-        Heavy: 'भारी',
-        Anxious: 'चिंतित',
-      } as Record<string, string>)[base] ?? base;
-    }
-    return base;
+    return localizedMoodLabel(primary, lang);
+  }
+
+  moodLabel(e: DiaryEntry): string {
+    const lang = uiLanguageForPreference(this.auth.currentUser?.preferred_language);
+    return localizedMoodLabel(moodFromSummary(e.mood_summary).primary, lang);
   }
 
   brandMark(): string {

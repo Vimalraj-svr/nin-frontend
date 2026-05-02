@@ -17,8 +17,8 @@ const LANG_CHIPS: LangChip[] = [
   { id: 'ml',        label: 'Malayalam',   script: 'മലയാളം',  backendValue: 'ml'        },
   { id: 'te',        label: 'Telugu',      script: 'తెలుగు',  backendValue: 'te'        },
   { id: 'kn',        label: 'Kannada',     script: 'ಕನ್ನಡ',   backendValue: 'kn'        },
-  // { id: 'bilingual', label: 'Bilingual',   script: undefined,  backendValue: 'bilingual' },
-  { id: 'auto',      label: 'Auto-detect', script: undefined,  backendValue: 'auto'      },
+  { id: 'bilingual', label: 'Bilingual',   script: undefined,  backendValue: 'bilingual' },
+  // { id: 'auto',      label: 'Auto-detect', script: undefined,  backendValue: 'auto'      },
 ];
 
 @Component({

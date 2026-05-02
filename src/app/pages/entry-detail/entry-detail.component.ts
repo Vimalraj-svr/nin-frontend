@@ -2,13 +2,13 @@ import { Component, OnInit, OnDestroy, signal, computed, ElementRef, ViewChild }
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { OrbComponent } from '../../components/orb/orb.component';
+import { MoodEmojiComponent } from '../../components/mood-emoji/mood-emoji.component';
 import { ShareWithModalComponent } from '../../components/share-with-modal/share-with-modal.component';
 import { DiaryApiService, SAMPLE_ENTRIES, SampleEntry, moodFromSummary, MoodInfo } from '../../services/diary-api.service';
-import { DiaryEntry, EmotionFlag, EMOTION_FLAGS, EntryComment, ImageAsset } from '../../models/diary.model';
+import { DiaryEntry, EmotionFlag, EMOTION_FLAGS, EntryComment, SharedComment, SharedReaction, ImageAsset } from '../../models/diary.model';
 import { EMOJI_CATEGORIES, EmojiCategory, ALL_EMOJIS } from '../../data/emojis';
 import { AuthService } from '../../services/auth.service';
-import { shouldShowLocalizedCompanion, uiLanguageForPreference } from '../../utils/ui-language';
+import { localizedMoodLabel, uiLanguageForPreference } from '../../utils/ui-language';
 
 const GENERATED_BILINGUAL = [
   '"Inniki romba tough day-a start aanadhu." The day began heavy. Even though I knew the 9 a.m. meeting was coming, last night sariya thoongala — sleep had stayed just out of reach. In the meeting, my boss kept interrupting while I was explaining the migration plan. Vaya thirakka mudiyala. The throat would not open.',
@@ -22,7 +22,7 @@ export const EMOTION_FLAG_MAP = new Map(EMOTION_FLAGS.map(f => [f.value, f]));
 @Component({
   selector: 'app-entry-detail',
   standalone: true,
-  imports: [OrbComponent, FormsModule, ShareWithModalComponent],
+  imports: [MoodEmojiComponent, FormsModule, ShareWithModalComponent],
   templateUrl: './entry-detail.component.html',
   styleUrl: './entry-detail.component.css',
 })
@@ -56,6 +56,14 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
   newComment = '';
   addingComment = false;
 
+  sharedComments = signal<SharedComment[]>([]);
+  sharedReactions = signal<SharedReaction[]>([]);
+  newSharedComment = '';
+  addingSharedComment = false;
+  ownerName = signal<string>('');
+
+  readonly QUICK_REACTIONS = ['❤️', '😊', '😢', '🤗', '✨', '🌸', '🙏', '😮'];
+
   emotionFlag = signal<EmotionFlag | null>(null);
   isHidden = signal(false);
 
@@ -85,7 +93,7 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private api: DiaryApiService,
     private auth: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.routeSub = this.route.params.subscribe(params => {
@@ -108,6 +116,9 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
           this.entryEmojis.set(e.emojis ?? []);
           this.images.set(e.images ?? []);
           this.comments.set(e.comments ?? []);
+          this.sharedComments.set(e.shared_comments ?? []);
+          this.sharedReactions.set(e.shared_reactions ?? []);
+          this.ownerName.set(e.shared_by_name ?? '');
           this.emotionFlag.set(e.emotion_flag ?? null);
           this.isHidden.set(e.is_hidden ?? false);
           this.sharedWith.set(e.shared_with ?? []);
@@ -131,6 +142,11 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     if (this.sampleEntry) return this.sampleEntry.mood;
     if (this.apiEntry()) return moodFromSummary(this.apiEntry()!.mood_summary);
     return { hue: 260, warmth: 0.38, label: 'Heavy', primary: 'heavy' };
+  }
+
+  get moodLabel(): string {
+    const lang = uiLanguageForPreference(this.auth.currentUser?.preferred_language);
+    return localizedMoodLabel(this.mood.primary, lang);
   }
 
   get title(): string {
@@ -187,26 +203,20 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     if (this.sampleEntry) return `${this.sampleEntry.style} · ${this.sampleEntry.language} · ${this.sampleEntry.timeLabel}`;
     const e = this.apiEntry();
     if (e) {
-      const modeLabels: Record<string, string> = {
-        SAME_LANGUAGE: 'Same language', ENGLISH_REFINED: 'English refined', BILINGUAL: 'Bilingual',
-      };
       const langLabels: Record<string, string> = {
         ta: 'Tamil', en: 'English', hi: 'Hindi', te: 'Telugu', kn: 'Kannada', ml: 'Malayalam',
       };
-      const mode = modeLabels[e.output_mode ?? ''] ?? e.output_mode ?? '';
       const lang = langLabels[e.detected_language ?? ''] ?? (e.detected_language ?? '');
       const time = this.formatTime(e.created_at);
-      return `${mode} · ${lang} · ${time}`;
+      return `${lang} · ${time}`;
     }
-    return 'Bilingual · Tanglish → English · 10:47 am';
+    return 'Tanglish → English · 10:47 am';
   }
 
   get currentEmotionInfo() {
     const flag = this.emotionFlag();
     return flag ? EMOTION_FLAG_MAP.get(flag) ?? null : null;
   }
-
-  // ── edit ─────────────────────────────────────────────────────────────────────
 
   startEdit() {
     const e = this.apiEntry();
@@ -283,7 +293,7 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     if (!e) return;
     this.api.deleteImage(e.id, asset.public_id).subscribe({
       next: () => this.images.set(this.images().filter(a => a.public_id !== asset.public_id)),
-      error: () => {},
+      error: () => { },
     });
   }
 
@@ -328,7 +338,7 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     if (!e) return;
     this.api.deleteComment(e.id, commentId).subscribe({
       next: () => this.comments.set(this.comments().filter(c => c.id !== commentId)),
-      error: () => {},
+      error: () => { },
     });
   }
 
@@ -359,7 +369,7 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
           setTimeout(() => this.shareCopied = false, 3000);
         });
       },
-      error: () => {},
+      error: () => { },
     });
   }
 
@@ -371,8 +381,73 @@ export class EntryDetailComponent implements OnInit, OnDestroy {
     if (!e) return;
     this.api.deleteEntry(e.id).subscribe({
       next: () => this.router.navigate(['/']),
-      error: () => {},
+      error: () => { },
     });
+  }
+
+  // ── shared social ────────────────────────────────────────────────────────────
+
+  myReaction(emoji: string): SharedReaction | undefined {
+    return this.sharedReactions().find(r => r.emoji === emoji);
+  }
+
+  toggleReaction(emoji: string) {
+    const e = this.apiEntry();
+    if (!e) return;
+    const existing = this.myReaction(emoji);
+    this.api.toggleSharedReaction(e.id, emoji).subscribe({
+      next: res => {
+        if (res.toggled === 'off') {
+          this.sharedReactions.set(this.sharedReactions().filter(r => r.id !== existing?.id));
+        } else {
+          const { toggled, ...reaction } = res;
+          this.sharedReactions.set([...this.sharedReactions(), reaction as SharedReaction]);
+        }
+      },
+      error: () => { },
+    });
+  }
+
+  removeSharedReaction(reactionId: string) {
+    const e = this.apiEntry();
+    if (!e) return;
+    this.api.deleteSharedReaction(e.id, reactionId).subscribe({
+      next: () => this.sharedReactions.set(this.sharedReactions().filter(r => r.id !== reactionId)),
+      error: () => { },
+    });
+  }
+
+  submitSharedComment() {
+    const e = this.apiEntry();
+    if (!e || !this.newSharedComment.trim() || this.addingSharedComment) return;
+    this.addingSharedComment = true;
+    this.api.addSharedComment(e.id, this.newSharedComment.trim()).subscribe({
+      next: c => {
+        this.sharedComments.set([...this.sharedComments(), c]);
+        this.newSharedComment = '';
+        this.addingSharedComment = false;
+      },
+      error: () => { this.addingSharedComment = false; },
+    });
+  }
+
+  removeSharedComment(commentId: string) {
+    const e = this.apiEntry();
+    if (!e) return;
+    this.api.deleteSharedComment(e.id, commentId).subscribe({
+      next: () => this.sharedComments.set(this.sharedComments().filter(c => c.id !== commentId)),
+      error: () => { },
+    });
+  }
+
+  // owner view helpers: group all shared reactions by user
+  get reactionsByUser(): { userId: string; userName: string; emojis: string[] }[] {
+    const map = new Map<string, { userId: string; userName: string; emojis: string[] }>();
+    for (const r of this.sharedReactions()) {
+      if (!map.has(r.user_id)) map.set(r.user_id, { userId: r.user_id, userName: r.user_name, emojis: [] });
+      map.get(r.user_id)!.emojis.push(r.emoji);
+    }
+    return Array.from(map.values());
   }
 
   // ── nav ──────────────────────────────────────────────────────────────────────

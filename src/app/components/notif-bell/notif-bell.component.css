@@ -116,8 +116,6 @@
 .notif-list {
   overflow-y: auto;
   flex: 1;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule) transparent;
 }
 
 /* ── Notification item ───────────────────────────────── */
@@ -204,12 +202,16 @@
 /* ── Mobile ──────────────────────────────────────────── */
 @media (max-width: 30rem) {
   .notif-panel {
-    position: fixed;
-    top: auto;
-    bottom: 4.5rem;
-    right: 0.75rem;
-    left: 0.75rem;
-    width: auto;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    bottom: auto;
+    right: -0.25rem;
+    left: auto;
+    width: min(22rem, calc(100vw - 1.5rem));
     max-height: 60vh;
+  }
+
+  .notif-panel-head {
+    border-bottom: none;
   }
 }

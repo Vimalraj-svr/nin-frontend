@@ -84,6 +84,10 @@ export class SocialApiService {
     );
   }
 
+  getSharedByMeWith(userId: string): Observable<DiaryEntry[]> {
+    return this.http.get<DiaryEntry[]>(`${this.entriesBase}/shared-by-me-with/${userId}`);
+  }
+
   getNotifications(): Observable<{ unread: number; notifications: AppNotification[] }> {
     return this.http.get<{ unread: number; notifications: AppNotification[] }>(`${this.base}/notifications`);
   }

@@ -33,7 +33,7 @@
     @for (entry of filtered; track entry.id) {
       <article class="entry-card" (click)="openEntry(entry.id)">
         <div class="entry-head">
-          <app-mood-emoji [primary]="moodOf(entry).primary" size="sm" />
+          <app-mood-emoji [primary]="moodOf(entry).primary" size="lg" />
           <div class="date-stack">
             <span class="day">{{ formatDay(entry.created_at) }}</span>
             <span class="time">{{ formatTime(entry.created_at) }}</span>
@@ -42,7 +42,7 @@
         <h3 class="entry-title">{{ entryTitle(entry) }}</h3>
         <div class="entry-preview">{{ entryPreview(entry) }}</div>
         <div class="entry-foot">
-          <span>{{ moodOf(entry).label }}</span>
+          <span>{{ moodLabel(entry) }}</span>
           <span class="sep"></span>
           <span>{{ entryLang(entry) }}</span>
           <span class="sep"></span>

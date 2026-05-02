@@ -1,18 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, shareReplay } from 'rxjs';
-import { DiaryEntry, EmotionFlag, EntryComment, GenerateRequest, ImageAsset } from '../models/diary.model';
+import { DiaryEntry, EmotionFlag, EntryComment, SharedComment, SharedReaction, GenerateRequest, ImageAsset } from '../models/diary.model';
 import { environment } from '../../environments/environment';
 
 export interface MoodInfo { hue: number; warmth: number; label: string; primary: string; }
 
 const MOOD_MAP: Record<string, MoodInfo> = {
-  joyful:    { hue: 18,  warmth: 0.88, label: 'Joyful · மகிழ்ச்சி',    primary: 'joyful'    },
-  tender:    { hue: 42,  warmth: 0.72, label: 'Tender · நெகிழ்ச்சி',    primary: 'tender'    },
-  content:   { hue: 56,  warmth: 0.78, label: 'Content · அமைதி',         primary: 'content'   },
-  uncertain: { hue: 228, warmth: 0.38, label: 'Uncertain · தயக்கம்',     primary: 'uncertain' },
-  heavy:     { hue: 260, warmth: 0.28, label: 'Heavy · கனமான',           primary: 'heavy'     },
-  anxious:   { hue: 284, warmth: 0.34, label: 'Anxious · பதற்றம்',       primary: 'anxious'   },
+  elated:    { hue: 22,  warmth: 0.92, label: 'Elated',    primary: 'elated'    },
+  joyful:    { hue: 30,  warmth: 0.88, label: 'Joyful',    primary: 'joyful'    },
+  playful:   { hue: 38,  warmth: 0.82, label: 'Playful',   primary: 'playful'   },
+  loving:    { hue: 350, warmth: 0.82, label: 'Loving',    primary: 'loving'    },
+  tender:    { hue: 42,  warmth: 0.72, label: 'Tender',    primary: 'tender'    },
+  grateful:  { hue: 120, warmth: 0.70, label: 'Grateful',  primary: 'grateful'  },
+  content:   { hue: 56,  warmth: 0.78, label: 'Content',   primary: 'content'   },
+  peaceful:  { hue: 145, warmth: 0.68, label: 'Peaceful',  primary: 'peaceful'  },
+  dreamy:    { hue: 245, warmth: 0.52, label: 'Dreamy',    primary: 'dreamy'    },
+  pensive:   { hue: 218, warmth: 0.42, label: 'Pensive',   primary: 'pensive'   },
+  uncertain: { hue: 228, warmth: 0.38, label: 'Uncertain', primary: 'uncertain' },
+  heavy:     { hue: 260, warmth: 0.28, label: 'Heavy',     primary: 'heavy'     },
+  anxious:   { hue: 284, warmth: 0.34, label: 'Anxious',   primary: 'anxious'   },
+  numb:      { hue: 200, warmth: 0.18, label: 'Numb',      primary: 'numb'      },
 };
 
 export interface SampleEntry {
@@ -89,16 +97,16 @@ export const SAMPLE_ENTRIES: SampleEntry[] = [
   },
 ];
 
-export const CALENDAR_DATA: Record<number, { hue: number; warmth: number }> = (() => {
-  const data: Record<number, { hue: number; warmth: number }> = {};
-  SAMPLE_ENTRIES.forEach(e => {
-    const day = parseInt(e.date.split('-')[2], 10);
-    data[day] = { hue: e.mood.hue, warmth: e.mood.warmth };
-  });
-  [[1,42,0.7],[2,56,0.75],[3,18,0.82],[5,228,0.4],[6,42,0.7],[8,56,0.76],[10,18,0.84],[12,260,0.35],[14,42,0.72],[16,56,0.78]]
-    .forEach(([d,h,w]) => { if (!data[d]) data[d] = { hue: h as number, warmth: w as number }; });
-  return data;
-})();
+// export const CALENDAR_DATA: Record<number, { hue: number; warmth: number }> = (() => {
+//   const data: Record<number, { hue: number; warmth: number }> = {};
+//   SAMPLE_ENTRIES.forEach(e => {
+//     const day = parseInt(e.date.split('-')[2], 10);
+//     data[day] = { hue: e.mood.hue, warmth: e.mood.warmth };
+//   });
+//   [[1,42,0.7],[2,56,0.75],[3,18,0.82],[5,228,0.4],[6,42,0.7],[8,56,0.76],[10,18,0.84],[12,260,0.35],[14,42,0.72],[16,56,0.78]]
+//     .forEach(([d,h,w]) => { if (!data[d]) data[d] = { hue: h as number, warmth: w as number }; });
+//   return data;
+// })();
 
 export function moodFromSummary(summary: string | null): MoodInfo {
   if (!summary) return MOOD_MAP['content'];
@@ -106,10 +114,19 @@ export function moodFromSummary(summary: string | null): MoodInfo {
   for (const key of Object.keys(MOOD_MAP)) {
     if (lower.includes(key)) return MOOD_MAP[key];
   }
-  if (lower.includes('happy') || lower.includes('joy')) return MOOD_MAP['joyful'];
-  if (lower.includes('sad') || lower.includes('grief')) return MOOD_MAP['heavy'];
-  if (lower.includes('worry') || lower.includes('stress')) return MOOD_MAP['anxious'];
-  if (lower.includes('peace') || lower.includes('calm')) return MOOD_MAP['content'];
+  if (lower.includes('ecstat') || lower.includes('euphori') || lower.includes('thrilled')) return MOOD_MAP['elated'];
+  if (lower.includes('happy') || lower.includes('joy') || lower.includes('cheer')) return MOOD_MAP['joyful'];
+  if (lower.includes('fun') || lower.includes('laugh') || lower.includes('playful') || lower.includes('silly')) return MOOD_MAP['playful'];
+  if (lower.includes('love') || lower.includes('romant') || lower.includes('affection') || lower.includes('adore')) return MOOD_MAP['loving'];
+  if (lower.includes('warm') || lower.includes('cozy') || lower.includes('gentle') || lower.includes('soft')) return MOOD_MAP['tender'];
+  if (lower.includes('thank') || lower.includes('gratit') || lower.includes('bless') || lower.includes('appreci')) return MOOD_MAP['grateful'];
+  if (lower.includes('peace') || lower.includes('calm') || lower.includes('seren') || lower.includes('still')) return MOOD_MAP['peaceful'];
+  if (lower.includes('nostalgic') || lower.includes('dream') || lower.includes('wistful') || lower.includes('memory')) return MOOD_MAP['dreamy'];
+  if (lower.includes('reflect') || lower.includes('thought') || lower.includes('ponder') || lower.includes('contemp')) return MOOD_MAP['pensive'];
+  if (lower.includes('unsure') || lower.includes('confus') || lower.includes('doubt') || lower.includes('mixed')) return MOOD_MAP['uncertain'];
+  if (lower.includes('sad') || lower.includes('grief') || lower.includes('cry') || lower.includes('sorrow')) return MOOD_MAP['heavy'];
+  if (lower.includes('worry') || lower.includes('stress') || lower.includes('nervous') || lower.includes('anxious')) return MOOD_MAP['anxious'];
+  if (lower.includes('numb') || lower.includes('empty') || lower.includes('hollow') || lower.includes('exhaust')) return MOOD_MAP['numb'];
   return MOOD_MAP['content'];
 }
 
@@ -174,6 +191,22 @@ export class DiaryApiService {
 
   deleteComment(entryId: string, commentId: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${entryId}/comments/${commentId}`);
+  }
+
+  addSharedComment(entryId: string, text: string): Observable<SharedComment> {
+    return this.http.post<SharedComment>(`${this.baseUrl}/${entryId}/shared-comments`, { text });
+  }
+
+  deleteSharedComment(entryId: string, commentId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${entryId}/shared-comments/${commentId}`);
+  }
+
+  toggleSharedReaction(entryId: string, emoji: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${entryId}/shared-reactions`, { emoji });
+  }
+
+  deleteSharedReaction(entryId: string, reactionId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${entryId}/shared-reactions/${reactionId}`);
   }
 
   getOnThisDay(): Observable<DiaryEntry[]> {

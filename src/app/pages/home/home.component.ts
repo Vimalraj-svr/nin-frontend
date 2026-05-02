@@ -7,7 +7,7 @@ import { OrbComponent } from '../../components/orb/orb.component';
 import { DiaryApiService, moodFromSummary, MoodInfo } from '../../services/diary-api.service';
 import { DiaryEntry } from '../../models/diary.model';
 import { AuthService } from '../../services/auth.service';
-import { localizedBrandMark, shouldShowLocalizedCompanion, uiLanguageForPreference } from '../../utils/ui-language';
+import { localizedBrandMark, localizedMoodLabel, shouldShowLocalizedCompanion, uiLanguageForPreference } from '../../utils/ui-language';
 import { firstName, withName, withNativeName } from '../../utils/personalize';
 
 interface CalDay { d: number; dow: string; hue?: number; warmth?: number; today: boolean; label: string; isoDate: string; }
@@ -182,6 +182,11 @@ export class HomeComponent implements OnInit {
   clearDateFilter() { this.selectedDate.set(null); }
 
   moodOf(e: DiaryEntry): MoodInfo { return moodFromSummary(e.mood_summary); }
+
+  moodLabel(e: DiaryEntry): string {
+    const lang = uiLanguageForPreference(this.auth.currentUser?.preferred_language);
+    return localizedMoodLabel(moodFromSummary(e.mood_summary).primary, lang);
+  }
 
   entryTitle(e: DiaryEntry): string {
     return e.title_original ?? e.title_english ?? 'Untitled';

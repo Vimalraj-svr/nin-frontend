@@ -2,12 +2,13 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocialApiService, VibeCheckResult, VibeCheckStatus } from '../../../services/social-api.service';
 import { SocialProfile, DiaryEntry, LANGUAGE_DISPLAY } from '../../../models/diary.model';
-import { OrbComponent } from '../../../components/orb/orb.component';
+import { MoodEmojiComponent } from '../../../components/mood-emoji/mood-emoji.component';
+import { moodFromSummary } from '../../../services/diary-api.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [OrbComponent],
+  imports: [MoodEmojiComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
 })
@@ -22,6 +23,7 @@ export class ProfileComponent implements OnInit {
 
   pendingAction = signal('');
   sharedEntries = signal<(DiaryEntry & { shared_by_name: string })[]>([]);
+  sharedByMe = signal<DiaryEntry[]>([]);
 
   private userId = '';
 
@@ -37,6 +39,7 @@ export class ProfileComponent implements OnInit {
     this.loadProfile();
     this.loadVibeStatus();
     this.loadSharedEntries();
+    this.loadSharedByMe();
   }
 
   private loadProfile() {
@@ -52,6 +55,17 @@ export class ProfileComponent implements OnInit {
       next: entries => this.sharedEntries.set(entries),
       error: () => {},
     });
+  }
+
+  private loadSharedByMe() {
+    this.social.getSharedByMeWith(this.userId).subscribe({
+      next: entries => this.sharedByMe.set(entries),
+      error: () => {},
+    });
+  }
+
+  moodPrimary(entry: DiaryEntry): string {
+    return moodFromSummary(entry.mood_summary).primary;
   }
 
   private loadVibeStatus() {
