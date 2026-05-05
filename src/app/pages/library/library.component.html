@@ -51,4 +51,48 @@
       </article>
     }
   </div>
+
+  <!-- Hidden / Vault section -->
+  <div class="vault-section">
+    <button class="vault-toggle" (click)="toggleVault()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <span>Hidden memories</span>
+      @if (hiddenEntries().length > 0) {
+        <span class="vault-count">{{ hiddenEntries().length }}</span>
+      }
+      <svg class="vault-chevron" [class.open]="showVault()" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    @if (showVault()) {
+      @if (vaultLoading()) {
+        <div class="vault-loading">Loading…</div>
+      } @else if (hiddenEntries().length === 0) {
+        <div class="vault-empty">No hidden memories.</div>
+      } @else {
+        <div class="vault-list">
+          @for (entry of hiddenEntries(); track entry.id) {
+            <div class="vault-row" (click)="openEntry(entry.id)">
+              <app-mood-emoji [primary]="moodOf(entry).primary" size="sm" />
+              <div class="vault-row-body">
+                <div class="vault-row-title">{{ entryTitle(entry) }}</div>
+                <div class="vault-row-date">{{ formatDay(entry.created_at) }}</div>
+              </div>
+              <button class="vault-unhide" (click)="unhide(entry, $event)" title="Make visible">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Unhide
+              </button>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
 </div>

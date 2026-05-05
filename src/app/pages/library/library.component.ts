@@ -24,6 +24,9 @@ export class LibraryComponent implements OnInit {
   activeFilter = 'all';
   entries = signal<DiaryEntry[]>([]);
   loading = signal(true);
+  hiddenEntries = signal<DiaryEntry[]>([]);
+  showVault = signal(false);
+  vaultLoading = signal(false);
 
   readonly dynamicFilters = computed(() => {
     const seen = new Set<string>();
@@ -44,6 +47,24 @@ export class LibraryComponent implements OnInit {
     this.api.getEntries(0, 100).subscribe({
       next: e => { this.entries.set(e); this.loading.set(false); },
       error: () => this.loading.set(false),
+    });
+  }
+
+  toggleVault() {
+    if (!this.showVault() && this.hiddenEntries().length === 0) {
+      this.vaultLoading.set(true);
+      this.api.getHiddenEntries().subscribe({
+        next: e => { this.hiddenEntries.set(e); this.vaultLoading.set(false); },
+        error: () => this.vaultLoading.set(false),
+      });
+    }
+    this.showVault.update(v => !v);
+  }
+
+  unhide(entry: DiaryEntry, event: Event) {
+    event.stopPropagation();
+    this.api.patchEntry(entry.id, { is_hidden: false }).subscribe({
+      next: () => this.hiddenEntries.update(list => list.filter(e => e.id !== entry.id)),
     });
   }
 

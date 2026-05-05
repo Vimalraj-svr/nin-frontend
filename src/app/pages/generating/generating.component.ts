@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { OrbComponent } from '../../components/orb/orb.component';
 import { DiaryApiService } from '../../services/diary-api.service';
@@ -48,7 +48,15 @@ export class GeneratingComponent implements OnInit, OnDestroy {
   private timer?: ReturnType<typeof setTimeout>;
   private apiDone = false;
   private animDone = false;
+  private generationComplete = false;
   pendingEntryId: string | null = null;
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(e: BeforeUnloadEvent) {
+    if (!this.generationComplete && !this.error()) {
+      e.preventDefault();
+    }
+  }
 
   constructor(private router: Router, private api: DiaryApiService) {}
 
@@ -71,13 +79,17 @@ export class GeneratingComponent implements OnInit, OnDestroy {
     const lang = sessionStorage.getItem('nin.pendingLang') ?? 'auto';
     const date = sessionStorage.getItem('nin.pendingDate') || undefined;
 
+    // Clear immediately so tab-duplicate can't re-fire the generation
+    sessionStorage.removeItem('nin.pendingAudio');
+    sessionStorage.removeItem('nin.pendingLang');
+    sessionStorage.removeItem('nin.pendingDate');
+
     if (!audioBase64) {
       this.apiDone = true;
       this.error.set('No recording found. Please try again.');
       return;
     }
 
-    // Reconstruct Blob from base64
     let blob: Blob;
     try {
       const binary = atob(audioBase64);
@@ -92,7 +104,6 @@ export class GeneratingComponent implements OnInit, OnDestroy {
 
     this.api.generateFromVoice(blob, lang, date).subscribe({
       next: entry => {
-        sessionStorage.removeItem('nin.pendingAudio');
         this.pendingEntryId = entry.id;
         this.apiDone = true;
         this.tryFinish();
@@ -109,6 +120,11 @@ export class GeneratingComponent implements OnInit, OnDestroy {
     const draft = sessionStorage.getItem('nin.pendingDraft') ?? '';
     const lang = sessionStorage.getItem('nin.pendingLang') ?? 'auto';
     const date = sessionStorage.getItem('nin.pendingDate') ?? undefined;
+
+    // Clear immediately so tab-duplicate can't re-fire the generation
+    sessionStorage.removeItem('nin.pendingDraft');
+    sessionStorage.removeItem('nin.pendingLang');
+    sessionStorage.removeItem('nin.pendingDate');
 
     const req: GenerateRequest = stateReq ?? {
       transcript: draft,
@@ -158,7 +174,8 @@ export class GeneratingComponent implements OnInit, OnDestroy {
 
   private tryFinish() {
     if (this.animDone && this.apiDone) {
-      if (this.error()) return; // stay and show error
+      if (this.error()) return;
+      this.generationComplete = true;
       setTimeout(() => {
         this.router.navigate(['/entry', this.pendingEntryId ?? 'new']);
       }, 600);

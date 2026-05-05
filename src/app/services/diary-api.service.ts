@@ -209,6 +209,10 @@ export class DiaryApiService {
     return this.http.delete(`${this.baseUrl}/${entryId}/shared-reactions/${reactionId}`);
   }
 
+  getHiddenEntries(): Observable<DiaryEntry[]> {
+    return this.http.get<DiaryEntry[]>(`${this.baseUrl}/hidden`);
+  }
+
   getOnThisDay(): Observable<DiaryEntry[]> {
     return this.http.get<DiaryEntry[]>(`${this.baseUrl}/on-this-day/all`);
   }
