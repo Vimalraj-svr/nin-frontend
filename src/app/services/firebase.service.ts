@@ -5,6 +5,8 @@ import {
   collection, onSnapshot, query, orderBy, limit,
   writeBatch, getDocs, where,
 } from 'firebase/firestore';
+import { getAuth, signInWithCustomToken, Auth } from 'firebase/auth';
+import { AuthService } from './auth.service';
 
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyAL4amWGasNJ5bxAYzL6pCi9X0B_8o4Ieg',
@@ -29,37 +31,40 @@ export interface FBNotification {
 export class FirebaseService implements OnDestroy {
   private app: FirebaseApp;
   private db: Firestore;
+  private auth: Auth;
   private unsub?: () => void;
   private userId = '';
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.app = initializeApp(FIREBASE_CONFIG);
     this.db = getFirestore(this.app);
+    this.auth = getAuth(this.app);
   }
 
   async connect(userId: string, onUpdate: (notifications: FBNotification[]) => void): Promise<void> {
-    if (this.userId === userId) {
-      console.log('[Firebase] Already connected for', userId);
-      return;
-    }
+    if (this.userId === userId) return;
     this.userId = userId;
-    console.log('[Firebase] Connecting for user', userId);
+
+    try {
+      const { token } = await this.authService.getFirebaseToken().toPromise() as { token: string };
+      await signInWithCustomToken(this.auth, token);
+    } catch (e) {
+      console.warn('[Firebase] Auth failed, attempting unauthenticated read:', e);
+    }
+
     this._listen(userId, onUpdate);
   }
 
   private _listen(userId: string, onUpdate: (n: FBNotification[]) => void) {
     this.unsub?.();
-    const path = `notifications/${userId}/items`;
-    console.log('[Firebase] Attaching onSnapshot listener →', path);
     const itemsRef = collection(this.db, 'notifications', userId, 'items');
     const q = query(itemsRef, orderBy('created_at', 'desc'), limit(30));
 
     this.unsub = onSnapshot(q, snapshot => {
-      console.log('[Firebase] Snapshot received —', snapshot.docs.length, 'items');
       const items = snapshot.docs.map(d => d.data() as FBNotification);
       onUpdate(items);
     }, err => {
-      console.error('[Firebase] onSnapshot error:', err.code, err.message);
+      console.warn('[Firebase] onSnapshot error:', err.code, err.message);
     });
   }
 

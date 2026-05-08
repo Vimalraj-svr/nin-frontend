@@ -145,6 +145,10 @@ export class AuthService {
     return this.http.get<{ wish: string | null }>(`${this.apiUrl}/birthday-wish`);
   }
 
+  getFirebaseToken(): Observable<{ token: string }> {
+    return this.http.get<{ token: string }>(`${this.apiUrl}/firebase-token`);
+  }
+
   deleteAccount(): Observable<any> {
     return this.http.delete(`${this.apiUrl}/me`).pipe(
       tap(() => {
