@@ -33,6 +33,16 @@
   display: none;
 }
 
+html {
+  font-size: 112.5%; /* 18px — scales all rem units; matches what 125% browser zoom felt like */
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 106.25%; /* 17px on small screens — a touch lighter so layouts stay tight */
+  }
+}
+
 html,
 body {
   background: linear-gradient(150deg,
@@ -43,8 +53,8 @@ body {
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 0.9375rem;
-  line-height: 1.55;
+  font-size: 1rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -283,11 +293,6 @@ app-root {
   opacity: 0.5;
 }
 
-.nav-item.active .nav-label-sub {
-  color: var(--paper);
-  opacity: 0.4;
-}
-
 .nav-item .k {
   font-family: var(--mono);
   font-size: 0.5625rem;
@@ -317,12 +322,19 @@ app-root {
 }
 
 .nav-label-sub {
-  font-family: var(--mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: var(--ink-ghost);
-  line-height: 1;
+  font-family: var(--serif);
+  font-size: 0.8125rem;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-soft);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.nav-item.active .nav-label-sub {
+  color: var(--paper);
+  opacity: 0.85;
 }
 
 .nav-sep {

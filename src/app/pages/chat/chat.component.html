@@ -1,23 +1,21 @@
 <div class="chat-wrap fade-in">
 
   <div class="chat-head">
-    <!-- <div class="eyebrow">your diary, speaking back</div> -->
-    <h1>Ask your diary</h1>
-    <p class="lede">Ask anything — I'll answer only from what you've actually written.</p>
+    <div class="eyebrow">your past self, answering</div>
+    <h1>Echo</h1>
+    <p class="lede">You've lived through more than you remember. Everything you felt and wrote is here — and it will answer.</p>
   </div>
 
   @if (totalEntries() < 3) {
-    <!-- Locked state: not enough entries -->
     <div class="chat-locked">
       <div class="chat-locked-ornament">✦</div>
-      <p class="chat-locked-copy">{{ firstName ? firstName + ', your' : 'Your' }} diary needs a few more pages before it can speak back to you.</p>
+      <p class="chat-locked-copy">{{ firstName ? firstName + ', write' : 'Write' }} a little more — your past self needs enough pages to speak from.</p>
       <div class="chat-locked-hint">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Write {{ 3 - totalEntries() }} more {{ (3 - totalEntries()) === 1 ? 'entry' : 'entries' }}{{ firstName ? ', ' + firstName : '' }} to unlock Ask
+        {{ 3 - totalEntries() }} more {{ (3 - totalEntries()) === 1 ? 'entry' : 'entries' }} before your diary can speak back
       </div>
     </div>
   } @else {
-    <!-- Starter prompts (only before first message) -->
     @if (messages().length === 0) {
       <div class="starters">
         @for (s of starters; track s) {
@@ -26,14 +24,13 @@
       </div>
     }
 
-    <!-- Message thread -->
     <div class="thread">
       @if (messages().length === 0 && !loading()) {
         <div class="thread-empty">
           <div class="thread-empty-ornament">✦ ✦ ✦</div>
           <div class="thread-empty-rule"></div>
-          <p class="thread-empty-copy">{{ firstName ? firstName + ', your' : 'Your' }} diary holds everything you've felt, noticed, and lived through. What would you like to know?</p>
-          <div class="thread-empty-hint">↑ pick a prompt above or type below</div>
+          <p class="thread-empty-copy">{{ firstName ? firstName + ', your' : 'Your' }} diary holds your fears, your quiet joys, the things you noticed but didn't say aloud. Ask the version of you that lived through it.</p>
+          <div class="thread-empty-hint">↑ pick a question above, or ask your own below</div>
         </div>
       }
       @for (msg of messages(); track $index) {
@@ -63,7 +60,7 @@
         class="chat-input"
         [(ngModel)]="input"
         (keydown)="onKey($event)"
-        placeholder="Ask your diary anything…"
+        placeholder="Ask your past self anything…"
         rows="1"
         [disabled]="loading()"
       ></textarea>

@@ -9,13 +9,13 @@ import { NotifBellComponent } from './components/notif-bell/notif-bell.component
 interface NavItem { id: string; label: string; sub: string; route: string; k: string; icon: string; }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'home',     label: 'Today',   sub: 'this moment',       route: '/',        k: 'H', icon: '◎' },
-  { id: 'compose',  label: 'Pour',    sub: 'new entry',         route: '/compose', k: 'W', icon: '✍' },
-  { id: 'pages',    label: 'Pages',   sub: 'your full story',   route: '/pages',   k: 'J', icon: '◷' },
-  { id: 'people',   label: 'Kin',     sub: 'follow & share',    route: '/people',  k: 'K', icon: '◐' },
-  { id: 'reflect',  label: 'Weave',   sub: 'threads & letters', route: '/reflect', k: 'R', icon: '◈' },
-  { id: 'chat',     label: 'Commune', sub: 'ask your diary',    route: '/chat',    k: 'C', icon: '◉' },
-  { id: 'settings', label: 'Sanctum', sub: 'your space',        route: '/settings',k: 'S', icon: '⚙' },
+  { id: 'home',     label: 'Today',    sub: 'here and now',           route: '/',        k: 'H', icon: '◎' },
+  { id: 'compose',  label: 'Confide',  sub: 'say what you feel',      route: '/compose', k: 'W', icon: '✍' },
+  { id: 'pages',    label: 'Chronicle',sub: 'your days, kept',        route: '/pages',   k: 'J', icon: '◷' },
+  { id: 'people',   label: 'Kin',      sub: 'your people',            route: '/people',  k: 'K', icon: '◐' },
+  { id: 'reflect',  label: 'Weave',    sub: 'patterns & letters',     route: '/reflect', k: 'R', icon: '◈' },
+  { id: 'chat',     label: 'Echo',     sub: 'your past self, answering', route: '/chat', k: 'C', icon: '◉' },
+  { id: 'settings', label: 'Sanctum',  sub: 'your space',             route: '/settings',k: 'S', icon: '⚙' },
 ];
 
 const AUTH_ROUTES = ['/login', '/register', '/shared', '/forgot-password', '/reset-password'];
@@ -176,8 +176,8 @@ export class AppComponent implements OnInit {
 
   crumb(): string {
     const map: Record<string, string> = {
-      home: 'Today', compose: 'Pour', pages: 'Pages', people: 'Kin',
-      reflect: 'Weave', chat: 'Commune', settings: 'Sanctum',
+      home: 'Today', compose: 'Confide', pages: 'Chronicle', people: 'Kin',
+      reflect: 'Weave', chat: 'Echo', settings: 'Sanctum',
     };
     return map[this.activeRoute()] ?? '';
   }

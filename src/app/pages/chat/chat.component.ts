@@ -7,11 +7,14 @@ import { firstName } from '../../utils/personalize';
 interface Message { role: 'user' | 'self'; text: string; }
 
 const STARTERS = [
-  'What was I worried about last month?',
-  'When did I last feel truly happy?',
-  'What do I keep coming back to in my writing?',
-  'Have I mentioned anyone a lot lately?',
-  'What did I write about this week?',
+  'What have I been most afraid of lately?',
+  'When did I last feel completely like myself?',
+  'What decision have I been putting off?',
+  'What keeps coming back no matter what?',
+  'Who has had the most space in my mind?',
+  'What have I been afraid to write about?',
+  'What did this past week actually feel like?',
+  'What do I keep telling myself is fine?',
 ];
 
 @Component({
