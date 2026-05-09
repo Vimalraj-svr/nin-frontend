@@ -89,5 +89,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/shared/shared.component').then(m => m.SharedComponent),
   },
+  {
+    path: 'about',
+    loadComponent: () =>
+      import('./pages/about/about.component').then(m => m.AboutComponent),
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -341,6 +341,18 @@
 }
 .form-foot a:hover { color: var(--gold-deep); }
 
+.about-link {
+  font-family: var(--mono) !important;
+  font-style: normal !important;
+  font-size: 0.65rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-ghost) !important;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+.about-link:hover { color: var(--ink-mute) !important; }
+
 /* Privacy line */
 .privacy-line {
   margin-top: 2.2500rem;

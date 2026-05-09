@@ -1,0 +1,303 @@
+<div class="about-wrap">
+
+  <!-- Topbar -->
+  <header class="about-header">
+    <a routerLink="/" class="about-header-logo">
+      <img src="/assets/logos/primary_logo.png" alt="Ninaivugal" />
+    </a>
+    <nav class="about-header-nav">
+      <span class="about-header-current">About</span>
+      @if (!isLoggedIn) {
+        <a routerLink="/login" class="about-header-link">Sign in</a>
+        <a routerLink="/register" class="about-header-cta">Create account →</a>
+      } @else if (isNewUser) {
+        <button class="about-header-cta" (click)="begin()">Begin writing →</button>
+      } @else {
+        <a routerLink="/" class="about-header-cta">Go to diary →</a>
+      }
+    </nav>
+  </header>
+
+  <div class="about-layout">
+
+    <!-- Sticky TOC sidebar -->
+    <aside class="about-toc">
+      <div class="toc-label">Contents</div>
+      @for (item of toc; track item.id) {
+        <button
+          class="toc-item"
+          [class.active]="activeSection() === item.id"
+          (click)="scrollTo(item.id)"
+        >{{ item.label }}</button>
+      }
+    </aside>
+
+    <!-- Main content -->
+    <main class="about-content">
+
+      <!-- Hero -->
+      <div class="about-hero">
+        <div class="about-hero-eyebrow">est. 2026 · a private diary</div>
+        <h1 class="about-hero-title">Ninaivugal<br><em>நினைவுகள்</em></h1>
+        <p class="about-hero-lede">A diary that listens, remembers, and speaks back.</p>
+        <div class="about-hero-rule">
+          <span class="about-hero-ornament">❧</span>
+        </div>
+      </div>
+
+      <!-- Section 1: overview -->
+      <section id="overview">
+        <h2>What is Ninaivugal?</h2>
+        <p>
+          Ninaivugal is the Tamil word for <em>memories</em>. It is also a private diary — a place to pour your thoughts into, in whatever language you carry them, and have them returned to you shaped into something you will want to keep. It is not a social network, not a productivity tool, not a habit tracker. It is simply a place to be honest over time.
+        </p>
+        <p>
+          At its heart, the app works like this: you write or speak your thoughts — raw, unpolished, however they come — and an AI shapes them into a literary first-person diary entry in your preferred language. Tamil, Hindi, Malayalam, Telugu, Kannada, English — it was built for people who think and feel in Indian languages, and it takes those languages seriously. The entries sound like you, because they begin with your words.
+        </p>
+        <p>
+          Over time, Ninaivugal learns the texture of your inner life. It notices what you keep returning to — the fears you circle, the people who surface again and again, the particular way a Tuesday evening tends to undo you. It weaves those observations into memory threads, weekly letters, and the Echo feature, which lets you ask questions of your past self and receive answers drawn entirely from what you actually wrote.
+        </p>
+        <p>
+          There is no algorithm deciding what you should feel, no engagement loop designed to keep you scrolling, no public audience for your pain. Just a diary, kept carefully, over years, in your own tongue.
+        </p>
+      </section>
+
+      <!-- Section 2: today -->
+      <section id="today">
+        <h2>Today</h2>
+        <div class="about-module-tag">◎ your home</div>
+        <p>
+          Your home in the app is called Today — and it earns that name. Every time you open it, you are greeted by name, with a greeting that shifts by the hour: gentle in the morning, reflective in the afternoon, quietly accounting in the evening. Below it, a question: <em>What has the morning brought you?</em>
+        </p>
+        <p>
+          The calendar shows the last ten days as small tiles, each one coloured by the emotional warmth of the entry written that day. Days with calm, contented entries glow amber. Days with heavier feelings sit cooler. Days you didn't write are left quiet. It is not a report card — it is simply a record of the weather of your inner life, visible at a glance.
+        </p>
+        <p>
+          Below the calendar, you will find your most recent entries and, if you have been writing for more than a year, an "On This Day" section: the same date in past years, surfaced for you to read again. These small time-travel moments are among the most quietly affecting parts of the app. Your streak — the number of consecutive days you have written — is shown in the sidebar. It is there to encourage, not to shame.
+        </p>
+      </section>
+
+      <!-- Section 3: confide -->
+      <section id="confide">
+        <h2>Confide</h2>
+        <div class="about-module-tag">✍ say what you feel</div>
+        <p>
+          Confide is where you write. You can type your thoughts directly, or record your voice — whatever comes more naturally in the moment. Either way, what you give the app is a raw material: the unfiltered stuff of your day. What comes back is a shaped, literary diary entry, written in the first person, in your preferred language.
+        </p>
+        <p>
+          The AI does not invent. It takes the people, events, and feelings you described and gives them form — the kind of prose you might produce if you were a better, more patient writer with an extra hour and some distance. Your entry is yours. It is grounded in what you said.
+        </p>
+        <p>
+          You can write one entry per day, with the option to write for up to three days back — today, yesterday, or two days ago. Each date is its own slot. If you delete an entry after generation, the slot for that day is still used; it does not reset. Each day is one entry. Make it count.
+        </p>
+
+        <h3>Voice writing</h3>
+        <p>
+          When you choose to record, there is a three-second countdown before the microphone opens — enough time to gather yourself. The recording requires a minimum of ten seconds before you can stop; it is there to make sure you say enough to be worth shaping. When you finish, the audio is transcribed and the transcript is passed to the same generation process as typed text.
+        </p>
+        <p>
+          The minimum to proceed is five words or thirty characters of usable transcript. If the recording is too short or unclear, you will be asked to try again. Speak naturally; the AI handles mixed languages, accents, and unfinished sentences.
+        </p>
+
+        <h3>How generation works</h3>
+        <p>
+          Generation is powered by Gemini 2.5 Flash, with Llama via Cloudflare Workers AI as a fallback if the primary provider is unavailable. Your past diary entries are provided as context — the AI reads what you have written before and uses it to write something that feels continuous, personal, and consistent in voice. Your preferred language is honoured; if you have overridden it for a specific entry, that override takes priority.
+        </p>
+      </section>
+
+      <!-- Section 4: chronicle -->
+      <section id="chronicle">
+        <h2>Chronicle</h2>
+        <div class="about-module-tag">◷ your days, kept</div>
+        <p>
+          Chronicle is your full diary archive — every entry, in chronological order, available to read whenever you need them. Each entry shows its title, the literary text generated from your words, the date and time it was written, the language it was written in, and its emotional signature.
+        </p>
+        <p>
+          From Chronicle, you can export your entire diary as a PDF — a formatted document of every entry, suitable for printing or archiving. You can also share individual entries with people in your Kin — people you have added and trusted enough to let them read a particular page of your life.
+        </p>
+        <p>
+          If there are entries you would rather not see in your main view — old entries that feel too raw, or ones you simply want to set aside — you can hide them. Hidden entries move to a private Vault within Chronicle: still yours, still searchable, just out of the main flow. You can bring them back at any time. Entries are never permanently deleted unless you explicitly choose to delete them.
+        </p>
+      </section>
+
+      <!-- Section 5: kin -->
+      <section id="kin">
+        <h2>Kin</h2>
+        <div class="about-module-tag">◐ your people</div>
+        <p>
+          The people in your life exist in Kin. You add them by email address, and they can add you in turn. Once connected, you can see entries they have chosen to share with you, and share your own entries with them — one at a time, deliberately, always by your own hand. Nothing is ever shared automatically.
+        </p>
+        <p>
+          Each person's profile in Kin shows the entries you have shared with each other, and their emotional signature — the general colour of how they tend to write and feel. There is also a Vibe Reading: an AI-generated character compatibility study, written honestly and warmly, based on the emotional patterns in both your diaries. It is not romantic astrology. It is an observation. Sometimes it is uncomfortably accurate.
+        </p>
+        <p>
+          Ninaivugal also knows birthdays. If you have added a Kin member's birthday, the app will generate a birthday wish for them on the day — something warm, specific, drawn from what you know about them. It arrives as a notification, so you never have to remember.
+        </p>
+      </section>
+
+      <!-- Section 6: weave -->
+      <section id="weave">
+        <h2>Weave</h2>
+        <div class="about-module-tag">◈ patterns & letters</div>
+        <p>
+          Weave holds two of the quieter features of the app — the ones that work on your behalf between entries, reading across time rather than just today.
+        </p>
+
+        <h3>Memory Threads</h3>
+        <p>
+          Memory Threads are patterns the AI has noticed in your diary. Not summaries — patterns. The recurring people you write about. The emotional themes that surface again and again without you quite naming them. The things you keep circling: a specific kind of anxiety, a person you mention in a new way each time, a recurring image of home or distance or late evenings. Each thread has a label, a quiet observation, and an emoji.
+        </p>
+        <p>
+          The threads are regenerated as you write more. They require enough entries to find patterns — a handful of entries will produce something, but the more you write, the more honest and nuanced the threads become.
+        </p>
+
+        <h3>Weekly Letter</h3>
+        <p>
+          Every Sunday, a letter is written to you. It looks back at the emotional arc of your week: what you carried, what shifted, what you seem to be moving toward. It is written warmly, in your preferred language, in the voice of someone who has read everything you wrote that week and wants to reflect it back without judgment.
+        </p>
+        <p>
+          The letter is generated from your last seven days of entries. If you have not written much in a given week, the letter will say so, gently. It does not fabricate what is not there.
+        </p>
+      </section>
+
+      <!-- Section 7: echo -->
+      <section id="echo">
+        <h2>Echo</h2>
+        <div class="about-module-tag">◉ your past self, answering</div>
+        <p>
+          Echo is the heart of the app. It is the feature that makes Ninaivugal something more than a diary — it makes it a conversation. You ask a question. Your past self answers, in the first person, from the words you actually wrote.
+        </p>
+        <p>
+          The mechanics are this: you ask something in natural language — whatever is on your mind. The app uses semantic search to find the diary entries most relevant to your question. Then it synthesises an answer in first person: <em>I felt…, I noticed…, I was afraid that…</em> The answer comes only from your entries. If you have not written about something, Echo will tell you: <em>"I don't think I've written about that."</em> It will not fill the gap with inference or outside knowledge. It speaks only from what you gave it.
+        </p>
+        <p>
+          To get started, Echo offers a few questions that tend to open things up — the kind you might not have thought to ask yourself:
+        </p>
+        <ul class="about-echo-starters">
+          <li>"What have I been most afraid of lately?"</li>
+          <li>"When did I last feel completely like myself?"</li>
+          <li>"What do I keep telling myself is fine?"</li>
+          <li>"Who have I been thinking about without writing about directly?"</li>
+          <li>"What was I proud of this month, even quietly?"</li>
+        </ul>
+        <p>
+          Echo requires at least three diary entries before it unlocks. It needs enough material to work with. Its responses are written in your preferred language.
+        </p>
+      </section>
+
+      <!-- Section 8: sanctum -->
+      <section id="sanctum">
+        <h2>Sanctum</h2>
+        <div class="about-module-tag">⚙ your space</div>
+        <p>
+          Sanctum is your settings page — but it is also more than that. The things you configure here shape how the entire app speaks to you. It is worth spending a few minutes with it.
+        </p>
+        <p>
+          Your <strong>display name</strong> is used throughout: in the AI-generated entries, in weekly letters, in Echo's responses. Your <strong>preferred language</strong> determines the language of your generated entries and letters — Tamil, Hindi, Malayalam, Telugu, Kannada, or English. Your <strong>gender</strong> tells the AI which pronouns to use when writing about you. Your <strong>birthday</strong> is used so Kin members can send wishes.
+        </p>
+        <p>
+          The personal details section is where the diary becomes truly yours. You can add your favourite things, hobbies, the names of close friends, the music you love, the sports you follow, the places you have been to or want to go. The AI reads these when generating entries and letters — it is why entries feel specific to you rather than generic. The more you add, the more personal the writing becomes.
+        </p>
+        <p>
+          You can also set a <strong>daily reminder</strong> — a gentle push notification at a time of your choosing to nudge you toward writing. Enable or disable push notifications at will. Your notification preferences are yours to control.
+        </p>
+      </section>
+
+      <!-- Section 9: languages -->
+      <section id="languages">
+        <h2>Languages</h2>
+        <p>
+          Ninaivugal was built for people who carry their inner life in Indian languages. The following languages are fully supported for diary generation, Echo responses, and weekly letters:
+        </p>
+        <ul class="about-lang-list">
+          <li><span class="about-lang-native">தமிழ்</span> Tamil</li>
+          <li><span class="about-lang-native">हिंदी</span> Hindi</li>
+          <li><span class="about-lang-native">മലയാളം</span> Malayalam</li>
+          <li><span class="about-lang-native">తెలుగు</span> Telugu</li>
+          <li><span class="about-lang-native">ಕನ್ನಡ</span> Kannada</li>
+          <li><span class="about-lang-native">English</span> English</li>
+        </ul>
+        <p>
+          You can write your transcript in any of these — or mix them freely. Code-switching between Tamil and English, or Hindi and English, is handled naturally. The AI does not require you to be consistent. Set your preferred output language in Sanctum, and that is what you will receive.
+        </p>
+        <p>
+          If the AI detects a different language in your transcript than your stated preference, it will follow your preference for the output. The transcript is raw material; the preference determines the shape of what comes back.
+        </p>
+      </section>
+
+      <!-- Section 10: limits -->
+      <section id="limits">
+        <h2>Limits & Rules</h2>
+        <p>
+          These are the honest constraints of the app. Understanding them will save you frustration.
+        </p>
+
+        <h3>Usage limits</h3>
+        <ul class="about-limits-list">
+          <li>One AI-generated entry per day, per account. This slot is consumed when generation succeeds. <strong>Deleting the entry does not restore the slot.</strong> Come back tomorrow.</li>
+          <li>You can write for up to three days back: today, yesterday, or two days ago. Each day has its own slot. You cannot write for dates further in the past.</li>
+          <li>Echo requires at least three diary entries before it becomes available.</li>
+          <li>Typed transcript minimum: five words or thirty characters. Voice recording minimum: ten seconds of audio before you can stop.</li>
+        </ul>
+
+        <h3>AI behaviour</h3>
+        <ul class="about-limits-list">
+          <li>The AI shapes your transcript into prose. It does not fact-check, verify, or correct what you wrote. If you wrote something that was not true, the entry will reflect it.</li>
+          <li>Echo answers only from your diary entries. It does not draw on outside knowledge. If something is not in your entries, it will say so rather than invent.</li>
+          <li>Weekly letters and memory threads require a meaningful volume of entries. A few entries will generate something; richer writing produces richer output.</li>
+          <li>Generation uses your past entries as context. A small portion of your previous entries is sent to the AI provider to personalise the output. This is necessary for the feature to work.</li>
+        </ul>
+
+        <h3>Platform limits</h3>
+        <ul class="about-limits-list">
+          <li>AI generation is powered by Gemini 2.5 Flash, with Llama via Cloudflare as a fallback. Provider rate limits may occasionally cause delays during peak usage.</li>
+          <li>This is an early-stage application. Features may change, and occasional errors should be expected. If something breaks, try again — and let us know.</li>
+          <li>Diary data is stored on MongoDB Atlas with encryption at rest.</li>
+        </ul>
+      </section>
+
+      <!-- Section 11: privacy -->
+      <section id="privacy">
+        <h2>Privacy</h2>
+        <p>
+          A diary that is not private is not a diary. Here is what we do and do not do with your data.
+        </p>
+        <ul class="about-privacy-list">
+          <li><strong>Encryption at rest.</strong> All diary entries are encrypted in the database using AES-256. Your words are not stored in plaintext.</li>
+          <li><strong>No training on your content.</strong> Your diary entries are not used to train AI models by Ninaivugal.</li>
+          <li><strong>Generation context.</strong> When you generate an entry or use Echo, your transcript and a small portion of recent entries are sent to Gemini or Llama for generation. This is the minimum necessary to produce a personalised result. It is not stored or used beyond the request.</li>
+          <li><strong>Echo is yours alone.</strong> Only you can access your Echo conversations. Kin members cannot see your Echo history.</li>
+          <li><strong>Shared entries.</strong> When you share an entry with a Kin member, they can read it but not edit or forward it. Hiding the entry removes it from their view. You remain in control.</li>
+          <li><strong>No data sales.</strong> We do not sell, share, or monetise your data. There are no third-party advertisers, brokers, or analytics platforms with access to your content.</li>
+          <li><strong>Passwords.</strong> Your password is hashed with bcrypt. We never store a plaintext password, and we cannot recover it for you — only reset it.</li>
+          <li><strong>No tracking.</strong> There is no third-party analytics, no tracking pixel, no session recording. We know how the app is used in aggregate, not who you are or what you wrote.</li>
+        </ul>
+      </section>
+
+      <!-- CTA footer -->
+      <div class="about-cta">
+        @if (!isLoggedIn) {
+          <h3>Ready to begin?</h3>
+          <p>Your diary is waiting. It will not rush you.</p>
+          <div class="about-cta-actions">
+            <a routerLink="/register" class="about-cta-primary">Create your diary</a>
+            <a routerLink="/login" class="about-cta-secondary">Sign in</a>
+          </div>
+        } @else if (isNewUser) {
+          <h3>You're all set.</h3>
+          <p>Your diary is ready when you are. Take a breath. Begin.</p>
+          <div class="about-cta-actions">
+            <button class="about-cta-primary" (click)="begin()">Begin writing →</button>
+          </div>
+        } @else {
+          <h3>Welcome back.</h3>
+          <p>Your pages are waiting.</p>
+          <div class="about-cta-actions">
+            <a routerLink="/" class="about-cta-primary">Go to diary →</a>
+          </div>
+        }
+      </div>
+
+    </main>
+  </div>
+</div>

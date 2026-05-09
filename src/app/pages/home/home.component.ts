@@ -48,10 +48,10 @@ export class HomeComponent implements OnInit {
     });
     this.buildCalendar([]);
 
-    // Check onboarding after user loads
+    // Redirect new users to the about/onboarding page
     this.auth.user$.subscribe(u => {
       if (u && !u.onboarding_complete) {
-        this.showOnboarding = true;
+        this.router.navigate(['/about']);
       }
     });
 
